@@ -1,17 +1,21 @@
 import sys
 import requests
+import json
 
 print(sys.version)
 
-#url = "http://redstar001.iptime.org:21310/rest/exec?cmd=cat%20/sys/class/thermal/thermal_zone0/temp" 
-url = "http://redstar001.iptime.org:21310/rest/exec" 
+
+#http://redstar001.iptime.org:17390/hello?name=gbox
+url = "http://redstar001.iptime.org:17390/hello"
 
 response = requests.get(url, params={
-    "cmd" : "cat /sys/class/thermal/thermal_zone0/temp"
+    "name" : "gbox"
 }) 
 
 print("status code : ",response.status_code)
 print("text : ", response.text)
+
+print(response.json()['msg'])
 
 
 
