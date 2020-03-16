@@ -12,3 +12,6 @@ if isinstance(type(a),int) == True : print("a is int")
 c=3.14
 print( type(c) is float )
 
+if (type(c) is float) == True : print("c is float")
+if (type(c) is str) == False : print("c is not str")
+
