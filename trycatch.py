@@ -16,6 +16,7 @@ answer = input("yes or no :")
 
 try: 
     if answer == "yes" : raise Exception
-except Exception: print("rase exception")
+except Exception: print("opps! rase exception")
+else : print("ok without exception")
 finally : print("finally go throu")
     
