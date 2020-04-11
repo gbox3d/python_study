@@ -14,7 +14,8 @@ print(np.ones((3,2),dtype=np.int))
 print(np.arange(0,10,1))
 
 
-
+# 2x3 의 2차원 배열 만들기
+print(np.arange(6).reshape(2,3))
 
 # def f(t):
 #     return np.exp(-t) * np.cos(2*np.pi*t)

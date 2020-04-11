@@ -1,3 +1,6 @@
+#참고
+# https://rfriend.tistory.com/473
+
 import numpy as np
 
 x = np.array([24, 2, 16, 5, 71, 13, 0])
