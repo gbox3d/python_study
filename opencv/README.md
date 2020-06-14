@@ -9,3 +9,5 @@
 
 [Lean Opencv]([leanopencv](https://www.learnopencv.com/))
 [how to install](https://www.learnopencv.com/opencv-installation-on-ubuntu-macos-windows-and-raspberry-pi/)
+
+[한글번역된 도큐먼트](https://opencv-python.readthedocs.io/en/latest/index.html)

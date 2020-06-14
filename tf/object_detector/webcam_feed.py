@@ -45,6 +45,9 @@ cap = cv.VideoCapture(0)
 while(True) :
     ret,frame = cap.read()
 
+
+    frame = cv.cvtColor(frame,cv.COLOR_BGR2RGB)
+
      # The input needs to be a tensor, convert it using `tf.convert_to_tensor`.
     input_tensor = tf.convert_to_tensor(frame)
 
@@ -72,6 +75,8 @@ while(True) :
       instance_masks=output_dict.get('detection_masks_reframed', None),
       use_normalized_coordinates=True,
       line_thickness=8)
+
+    _img_temp = cv.cvtColor(_img_temp,cv.COLOR_RGB2BGR)
     
     
     cv.imshow('frame',_img_temp)
