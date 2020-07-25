@@ -26,11 +26,9 @@ print(np.arange(6).reshape(2,3))
 np.random.rand(10)
 
 # %%
-_rand_array = np.random.randn(6,4) * 100
-
-_rand_array = 100 + (_rand_array/2)
+#램덤 2차원배열만들기 
+_rand_array = np.random.rand(6,4) * 100
 _rand_array = _rand_array.astype(np.int)
-
 print(_rand_array)
 
 # %%
