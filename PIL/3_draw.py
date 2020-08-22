@@ -25,6 +25,7 @@ _img = Image.new('RGB',(800,600),(255,255,255))
 drawer = ImageDraw.Draw(_img)
 
 #잘라내기
+#crop의 인자 전달수서는 시작위치xy, 끝위치xy
 _crop_img = _test_img.crop((600,200,800,700))
 
 #붙이기
@@ -39,3 +40,5 @@ drawer.text((100,100),"hello",fill="red")
 drawer.line([(0,0),(800,0),(800,600),(0,600),(0,0)],width=8,fill=(0,255,0))
 
 display(_img)
+
+# %%
