@@ -31,13 +31,17 @@ _crop_img = _test_img.crop((600,200,800,700))
 #붙이기
 _img.paste(_crop_img,(200,100))
 
+print('save image')
+_crop_img.save('test.png')
 # _img.paste(_test_img,(0,0,200,200))
 
 #글씨 출력
 drawer.text((100,100),"hello",fill="red")
 
 #선그리기
-drawer.line([(0,0),(800,0),(800,600),(0,600),(0,0)],width=8,fill=(0,255,0))
+drawer.line(
+    [(0,0),(800,0),(800,600),(0,600),(0,0)],
+    width=8,fill=(0,255,0))
 
 display(_img)
 
