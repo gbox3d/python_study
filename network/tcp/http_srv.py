@@ -14,8 +14,14 @@ while True:
     data = client_socket.recv(1024)
     print(f"recevied : {addr} {data.decode()}")
 
+    _str = 'HTTP/1.1 200 OK\r\n'
+    _str += 'Content-Type: text/html\r\n\r\n'
+    _str += '<!DOCTYPE HTML>\r\n'
+    _str += '<html>\r\n<h1>Hello http</h1></html>\n'
     
-    client_socket.sendall('ok'.encode())
+    client_socket.sendall(_str.encode())
+
+
 
 
     client_socket.close()
