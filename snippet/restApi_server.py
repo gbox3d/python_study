@@ -8,6 +8,7 @@ from datetime import datetime
 import sys
 from flask import Flask, escape, request
 from pathlib import Path
+from flask_cors import CORS, cross_origin
 
 print(sys.version)
 # print(sys.argv[0])
@@ -25,6 +26,8 @@ elif len(sys.argv) > 1 :
 
 #%%
 app = Flask(__name__)
+CORS(app)
+CORS(app, resources={r'*': {'origins': '*'}})
 
 @app.route('/hello')
 def hello():
