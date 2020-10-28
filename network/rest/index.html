@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> welcome to html5 universe </title>
+
+  <script></script>
+
+</head>
+
+<body>
+
+
+  <div>
+    <button id="test">rest test</button>
+  </div>
+
+  <script>
+
+    
+    document.querySelector("#test").addEventListener('click',async (evt)=> {
+      let _res = await (await fetch(`http://ubiqos001.iptime.org:10048/hello`) ).json()
+    //   document.querySelector("#result-rest-test").innerText = _res.time
+      console.log(_res)
+      
+    })
+
+
+  </script>
+
+</body>
+
+</html>
