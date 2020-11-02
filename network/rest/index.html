@@ -14,18 +14,88 @@
 <body>
 
 
+
+
   <div>
     <button id="test">rest test</button>
   </div>
 
+  <div style="border: solid 1px black; margin-top: 5px;" id="uploader-ui">
+
+    <form name="upload-file">
+      <div style="height: 80px;">
+        <input type="file" name="file">
+      </div>
+    </form>
+  </div>
+
   <script>
 
-    
-    document.querySelector("#test").addEventListener('click',async (evt)=> {
-      let _res = await (await fetch(`http://ubiqos001.iptime.org:10048/hello`) ).json()
-    //   document.querySelector("#result-rest-test").innerText = _res.time
+    var theApp = {
+      version: [1, 0, 0],
+      baseAddress: {
+        url: location.hostname,
+        port: 8282
+
+      }
+    }
+
+
+    document.querySelector("#test").addEventListener('click', async (evt) => {
+      let _res = await (await fetch(`http://${theApp.baseAddress.url}:${theApp.baseAddress.port}/8282`)).json()
+      //   document.querySelector("#result-rest-test").innerText = _res.time
       console.log(_res)
-      
+
+    })
+
+    document.querySelector('form[name=upload-file]').addEventListener('change', (evt) => {
+
+      // console.log('submit', evt.target.files[0])
+
+      document.querySelector('#uploader-ui').classList.add('hide')
+
+      let _fileObj = evt.target.files[0];
+
+      const reader = new FileReader();
+      reader.addEventListener('load', async (_) => {
+
+        console.log(_.target.result)
+        console.log(_fileObj)
+        let _time = new Date()
+
+        // theApp.infoText.innerText = 'now uploading...'
+
+        try {
+          let upload_name = `${_time.getTime()}_${_fileObj.name}`
+          let _ = await (await (fetch(`http://${theApp.baseAddress.url}:${theApp.baseAddress.port}/upload`, {
+            method: 'POST',
+            body: reader.result,
+            headers: new Headers({
+              'Content-Type': _fileObj.type,
+              'Upload-Name': upload_name,
+              'file-size': _fileObj.size
+            }), // 이 부분은 따로 설정하고싶은 header가 있다면 넣으세요
+          }))).json();
+
+          console.log(_)
+
+          if (_.result == 'ok') {
+            // theApp.infoText.innerText = 'upload ok'
+            document.querySelector('#ask-ai-menu-1').classList.remove('hide')
+            document.querySelector('#ask-ai-menu-1 button').dataset.upload_name = upload_name
+          }
+          else {
+            theApp.infoText.innerText = `${_.result}`
+          }
+
+        } catch (error) {
+          console.log(error)
+          // theApp.infoText.innerText = error
+        }
+      })
+      reader.readAsArrayBuffer(_fileObj);
+
+
     })
 
 
