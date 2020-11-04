@@ -20,10 +20,6 @@ while True:
     _str += '<html>\r\n<h1>Hello http</h1></html>\n'
     
     client_socket.sendall(_str.encode())
-
-
-
-
     client_socket.close()
 
 # %%
