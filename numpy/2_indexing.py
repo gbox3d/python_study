@@ -1,8 +1,12 @@
 
 #%%
+#init module
 import numpy as np 
+print('numpy ready')
 
-arr1 = np.arange(0,10,1)
+#%%
+# 1차원 예제
+arr1 = np.arange(0,10,1) # 0~9 배열만들기 
 
 #첫번째요소
 print(arr1[0])
@@ -14,10 +18,14 @@ print(arr1[3])
 
 # 0~3번째 요소 
 print(arr1[0:3])
+print(arr1[:3])
 
 # 전체 
 print(arr1[:])
 
+
+#%%
+# 2차원 
 arr2 = np.array([[1,2,3,4],
                  [5,6,7,8],
                  [9,10,11,12]])
@@ -65,3 +73,5 @@ print('_________')
 
 
 
+
+# %%
