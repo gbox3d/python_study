@@ -20,6 +20,4 @@ while True:
         udp_socket.sendto(_res,(_rinfo[0],_rinfo[1]))
     else :
         _res = pack('<LBBHH',77,0,0,0,0)
-    
 
-# %%
