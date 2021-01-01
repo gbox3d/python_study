@@ -9,6 +9,8 @@ print(arr2)
 arr3 = np.zeros(10,dtype=np.uint8)
 print(arr3)
 
+
+
 #%%
 print(np.ones(10))
 print(np.ones((3,2),dtype=np.int))
