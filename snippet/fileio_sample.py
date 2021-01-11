@@ -42,4 +42,10 @@ buf = bytes("hello python",'utf-8')
 fd.write(struct.pack('I',len(buf)))
 fd.write(buf)
 fd.close()
+# %% 디랙토리 생성 
+import shutil
+_test_dir = './test'
+if os.path.exists(_test_dir):
+    shutil.rmtree(_test_dir)  # delete output folder
+os.makedirs(_test_dir) 
 # %%

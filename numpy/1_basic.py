@@ -1,23 +1,12 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
 # %%
 import sys
 import numpy as np 
 
 print(sys.version)
 
-#%%
+# %%
 data1 = [1,2,3,4,5]
 print(data1,type(data1))
-
-# %% [markdown]
-# ### 기본 정보 얻기
-# 
-# dtype : 데이터 타입구하기  
-# shape : 데이터 구성 형식
-# 
-
-# %%
 
 arr1 = np.array(data1)
 
@@ -27,20 +16,12 @@ print( f'array length use len {len(arr1)} ')
 
 print(arr1,type(arr1))
 print(f'data type : {arr1.dtype}')
-
-# %% [markdown]
-# ### 데이터 형 변환
-# astype()  
-
 # %%
-
 _arr1 = arr1.astype(np.float)
 print(_arr1)
 print(_arr1.dtype)
-
-
 # %%
-#리스트를 배열로 만들기 
+#배열로 만들기 
 _ary3 = np.array([1,2,3,4])
 _ary4 = np.array([10,11,12,13])
 
@@ -49,10 +30,7 @@ print( type(_ary3) , type(_ary4) )
 print(_ary3[0:4]*2) 
 print(_ary4[0:4]*2) # 2 곱하기 
 
-# %% 비교 연산자 적용 
-_ary1 = np.array([1,2,3,4])
-_ary2 = np.array([10,11,12,13])
-
+# %%
 #2보다 큰것만 True
 print( _ary1 > 1 )
 print( (_ary1 > 2).sum()) # 조건에 맞는 원소 객수 구하기 
