@@ -3,3 +3,5 @@
 FILE.INI
 uploads/
 __pycache__
+
+opencv/basic/image/*.jpg
