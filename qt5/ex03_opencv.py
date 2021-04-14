@@ -24,7 +24,7 @@ class MyApp(QWidget) :
         self.setLayout(vbox)
         self.show()
 
-        self.aboutToQuit.connect(self.onExit)
+        # self.aboutToQuit.connect(self.onExit)
         self.btn_start.clicked.connect(self._start)
         self.btn_stop.clicked.connect(self._stop)
         
@@ -42,7 +42,7 @@ class MyApp(QWidget) :
                 h,w,c = img.shape
                 qImg = QImage(img.data, w, h, w*c, QImage.Format_RGB888)
                 pixmap = QPixmap.fromImage(qImg)
-                label.setPixmap(pixmap)
+                self.label.setPixmap(pixmap)
             else:
                 QMessageBox.about(self, "Error", "Cannot read frame.")
                 print("cannot read frame.")
