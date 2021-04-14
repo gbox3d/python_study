@@ -19,8 +19,8 @@ class MyApp(QWidget) :
         self.btn_start = QPushButton("Camera On")
         self.btn_stop = QPushButton("Camera Off")
         vbox.addWidget(label)
-        vbox.addWidget(btn_start)
-        vbox.addWidget(btn_stop)
+        vbox.addWidget(self.btn_start)
+        vbox.addWidget(self.btn_stop)
         self.setLayout(vbox)
         self.show()
 
