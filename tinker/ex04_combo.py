@@ -1,5 +1,5 @@
-#%%
 import tkinter as tk # Tkinter
+import tkinter.ttk as ttk
 import pathlib
 
 #%%
@@ -12,9 +12,17 @@ lbl = tk.Label(win, text="Hello" ,font=("Arial Bold",50))
 lbl.grid(column=0, row=0)
 
 print(f'{pathlib.Path.cwd()}')
-# lbl_2 = tk.Label(win, text=f'{pathlib.Path.cwd()}')
-# lbl_2.grid(column=0, row=1)
+
+combo = ttk.Combobox(win)
+combo['values'] = (1,2,3,4,5,"text")
+combo.current(1)
+combo.grid(column=0, row=1)
+
+def clicked():
+    lbl.config(text=f'{combo.get()}')
+
+btn = tk.Button(win,text='click me',command=clicked)
+btn.grid(column=1,row=0)
 
 win.mainloop()
-
 # %%

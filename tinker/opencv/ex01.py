@@ -2,6 +2,10 @@ import tkinter as tk # Tkinter
 from PIL import ImageTk, Image # Pillow
 import cv2 as cv # OpenCV
 import os
+import pathlib
+#%%
+
+print(f'{pathlib.Path.cwd()}')
 
 # GUI 설계
 win = tk.Tk() # 인스턴스 생성
@@ -22,7 +26,7 @@ frm.grid(row=1, column=0) # 격자 행, 열 배치
 lbl1 = tk.Label(frm)
 lbl1.grid()
 
-img = cv.imread('./res/Lenna.png')
+img = cv.imread('../../res/Lenna.png')
 _img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 __img = Image.fromarray(_img) # Image 객체로 변환
 imgtk = ImageTk.PhotoImage(image=__img) # ImageTk 객체로 변환
