@@ -1,4 +1,7 @@
+#참고 : https://076923.github.io/posts/Python-tkinter-32/
+
 import tkinter as tk # Tkinter
+
 from PIL import ImageTk, Image # Pillow
 import cv2 as cv # OpenCV
 import os
@@ -30,8 +33,9 @@ img = cv.imread('../../res/Lenna.png')
 _img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 __img = Image.fromarray(_img) # Image 객체로 변환
 imgtk = ImageTk.PhotoImage(image=__img) # ImageTk 객체로 변환
-lbl1.imgtk = imgtk
 lbl1.configure(image=imgtk)
+lbl1.imgtk = imgtk #가비지 컬랙터에의해 삭제되는것 방지
+
 # lbl1.after(10, video_play)
 
 win.mainloop() #GUI 시작
