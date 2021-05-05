@@ -18,7 +18,7 @@ plt.xlabel('city')
 plt.ylabel('zombie')
 plt.title('zombie status')
 plt.plot(["seoul","tokeyo","sangah"],[12,200,150])
-plt.show
+plt.show()
 
 
 #%%
