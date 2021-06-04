@@ -31,6 +31,7 @@ _crop_img = _test_img.crop((600,200,800,700))
 #붙이기
 _img.paste(_crop_img,(200,100))
 
+# 이미지 저장 
 print('save image')
 _crop_img.save('test.png')
 # _img.paste(_test_img,(0,0,200,200))
@@ -44,5 +45,4 @@ drawer.line(
     width=8,fill=(0,255,0))
 
 display(_img)
-
-# %%
+_img.save('test.jpg')
