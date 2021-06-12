@@ -5,3 +5,7 @@ uploads/
 __pycache__
 
 opencv/basic/image/*.jpg
+
+res/
+
+.vscode/
