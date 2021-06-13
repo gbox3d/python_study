@@ -38,7 +38,7 @@ def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scale
     return img, ratio, (dw, dh)
 
 #%% 한프레임씩 읽어서 출력하기 
-cap = cv2.VideoCapture('../res/akb48_heart_gatavirus.mp4')
+cap = cv2.VideoCapture('../../res/akb48_heart_gatavirus.mp4')
 
 total_framecount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) # 전체 프레임 구하기 
 
@@ -58,3 +58,5 @@ if cap.isOpened() :
 
 cv2.destroyAllWindows()
 
+
+# %%

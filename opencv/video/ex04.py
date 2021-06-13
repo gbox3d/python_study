@@ -8,7 +8,7 @@ from IPython.display import display
 print( f"opencv version : {cv.__version__}")
 
 #%% 한프레임씩 읽어서 출력하기 
-cap = cv.VideoCapture('../res/akb48_heart_gatavirus.mp4')
+cap = cv.VideoCapture('../../res/akb48_heart_gatavirus.mp4')
 total_framecount = int(cap.get(cv.CAP_PROP_FRAME_COUNT)) # 전체 프레임 구하기 
 
 frame_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
