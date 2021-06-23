@@ -1,0 +1,17 @@
+title : hello yaml
+max_speed : 299792485
+array_test : ['ok','good','yes','no'] 
+bank_objs : 
+  - url : 'rtsp://admin:passwd@url'
+    index : 11
+    targets : [3]
+    upload_term : 7200
+  - url : 'rtsp://admin:passwd@url'
+    index : 12
+    targets : [3]
+    upload_term : 7200
+test :
+  weight_file : '../weights/best.pt'
+  vid_src : 'rtsp://admin:passwd@url'
+  images : ['test.jpg']
+    
