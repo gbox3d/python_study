@@ -1,6 +1,9 @@
 #%%
-import torch, torchvision
-print(torch.__version__, torch.cuda.is_available())
+import torch
+import cv2
+print(f'torch : {torch.__version__}' )
+print(f'cuda : {torch.cuda.is_available()}')
+print(f'cv version : {cv2.__version__}')
 
 # %%
 # Some basic setup:
@@ -11,7 +14,7 @@ setup_logger()
 
 # import some common libraries
 import numpy as np
-import os, json, cv2, random
+
 # from google.colab.patches import cv2_imshow
 
 # import some common detectron2 utilities
@@ -24,6 +27,9 @@ from detectron2.data import MetadataCatalog, DatasetCatalog
 import PIL.Image as Image
 from IPython.display import display
 
+print(f'detectron {detectron2.__version__}')
+
+
 #%%
 im = cv2.imread("../res/input.jpg")
 display( Image.fromarray(cv2.cvtColor(im,cv2.COLOR_BGR2RGB)))
@@ -35,8 +41,8 @@ cfg = get_cfg()
 cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
 cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
 # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
-# cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
-cfg.MODEL.WEIGHTS = '../res/model_final_f10217.pkl'
+cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+# cfg.MODEL.WEIGHTS = '../res/model_final_f10217.pkl'
 #%%
 print(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
 print(model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
