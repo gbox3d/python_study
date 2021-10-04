@@ -80,3 +80,13 @@ if torch.cuda.is_available() :
 else :
     print('no cuda')
 # %%
+# max 
+x = torch.rand(3,5)
+print(x)
+
+print( torch.max(x) ) # 전체중 가장큰값
+
+print( torch.max(x,1) ) # 한줄 한줄 에서 가각 가장 큰값 구하기(인덱스토 구해짐)
+
+
+# %%
