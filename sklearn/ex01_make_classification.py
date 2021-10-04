@@ -8,8 +8,11 @@ from sklearn.datasets import make_classification
 #%%
 nSamples = 1000
 X,y = make_classification(
-    n_samples=nSamples,n_features=2,n_informative=2,
-    n_redundant=0,n_clusters_per_class=1
+    n_samples=nSamples,
+    n_features=2,
+    n_informative=2,
+    n_redundant=0,
+    n_clusters_per_class=1
 )
 
 print(X.shape)
