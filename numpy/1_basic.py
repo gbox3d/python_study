@@ -4,6 +4,14 @@ import numpy as np
 
 print(sys.version)
 
+#%%
+a = np.empty(0)
+print(a)
+a = np.append(a,1)
+print(a)
+a = np.append(a,2)
+print(a)
+
 # %%
 data1 = [1,2,3,4,5]
 print(data1,type(data1))
