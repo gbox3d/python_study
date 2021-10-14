@@ -29,3 +29,12 @@ print(__list)
 __list[0][2] = 20
 print(__list)
 # %%
+
+px = [1,2,3,4,5]
+py = [6,7,8,9,10]
+poly = [(x + 0.5, y + 0.5) for x, y in zip(px, py)]
+print(poly)
+poly = [p for x in poly for p in x] # flatten
+print(poly)
+
+# %%

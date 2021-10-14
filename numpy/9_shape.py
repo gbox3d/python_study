@@ -32,3 +32,12 @@ _ary6 = np.reshape(_ary,(6,2,1))
 print(_ary6.shape)
 print(_ary6)
 # %%
+_ary7 = [1,2,3,4,5,6,7,8,9,10]
+_temp = np.reshape(_ary7,(-1,2)) # 두개씩 묶기 
+px = list(_temp[:,0] ) # x 좌표
+py = list(_temp[:,1] ) # y 좌표
+print( px )
+print(type(px))
+print(type(_ary7))
+print(type(_temp[:,0]))
+# %%
