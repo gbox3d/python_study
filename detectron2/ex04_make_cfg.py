@@ -47,7 +47,7 @@ print(cfg_file)
 
 # %%
 
-with open('configs/config.yaml', 'w') as f:
+with open('configs/microcontroller_config.yaml', 'w') as f:
     yaml.dump(cfg_file, f)
 
 # %%
