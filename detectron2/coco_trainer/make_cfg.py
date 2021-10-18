@@ -51,8 +51,8 @@ NUM_CLASSES = len(_meta.thing_classes)
 #%%
 cfg = get_cfg()
 cfg.merge_from_file(model_zoo.get_config_file(base_config_file))
-cfg.DATASETS.TRAIN = (datasetname+'_train',)
-cfg.DATASETS.TEST = (datasetname+'_valid',)
+cfg.DATASETS.TRAIN = (datasetname+'_train',datasetname+'_valid')
+cfg.DATASETS.TEST = (datasetname+'_test',)
 cfg.DATALOADER.NUM_WORKERS = 2
 cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(base_config_file)
 cfg.SOLVER.IMS_PER_BATCH = IMS_PER_BATCH

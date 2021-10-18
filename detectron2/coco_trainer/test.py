@@ -14,6 +14,7 @@ from detectron2.utils.logger import setup_logger
 import detectron2
 import torch
 import torchvision
+import json
 
 # check pytorch installation:
 print(torch.__version__, torch.cuda.is_available())
@@ -71,5 +72,35 @@ v = Visualizer( cv2.cvtColor(img,cv2.COLOR_BGR2RGB), _meta, scale=1.0)
 out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
 print(f'delay { time.time() - start_tick }')
 display( Image.fromarray(out.get_image()))
+
+# %%
+experiment_folder = '../output'
+
+def load_json_arr(json_path):
+    lines = []
+    with open(json_path, 'r') as f:
+        for line in f:
+            lines.append(json.loads(line))
+    return lines
+
+experiment_metrics = load_json_arr(experiment_folder + '/metrics.json')
+
+
+# %%
+# plt.plot(
+#     [x['iteration'] for x in experiment_metrics], 
+#     [x['total_loss'] for x in experiment_metrics])
+# plt.plot(
+#     [x['iteration'] for x in experiment_metrics if 'validation_loss' in x], 
+#     [x['validation_loss'] for x in experiment_metrics if 'validation_loss' in x])
+# plt.legend(['total_loss', 'validation_loss'], loc='upper left')
+# plt.show()
+# %%
+for x in experiment_metrics :
+    if 'total_loss' in x.keys():
+        print(x['iteration'])
+        print(x['total_loss'])
+# experiment_metrics[0]['total_loss']
+
 
 # %%

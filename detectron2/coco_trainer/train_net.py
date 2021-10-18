@@ -40,6 +40,8 @@ from detectron2.evaluation import (
 from detectron2.modeling import GeneralizedRCNNWithTTA
 from detectron2.data.datasets import register_coco_instances
 
+from detectron2.data import DatasetMapper, build_detection_test_loader
+import LossEvalHook 
 
 def build_evaluator(cfg, dataset_name, output_folder=None):
     """
@@ -115,6 +117,19 @@ class Trainer(DefaultTrainer):
         res = cls.test(cfg, model, evaluators)
         res = OrderedDict({k + "_TTA": v for k, v in res.items()})
         return res
+
+    def build_hooks(self):
+        hooks = super().build_hooks()
+        hooks.insert(-1,LossEvalHook.LossEvalHook(
+            self.cfg.TEST.EVAL_PERIOD,
+            self.model,
+            build_detection_test_loader(
+                self.cfg,
+                self.cfg.DATASETS.TEST[0],
+                DatasetMapper(self.cfg,True)
+            )
+        ))
+        return hooks
 
 import utils
 def setup(args):
