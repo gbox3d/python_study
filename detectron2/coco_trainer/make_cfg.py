@@ -31,7 +31,7 @@ base_config_file = "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
 config_dir = '../configs/AmericanMushromms'
 output_dir = '../output'
 datasetname = 'AmericanMushromms'
-MAX_ITER = 100
+MAX_ITER = 5000
 IMS_PER_BATCH = 2
 
 config_name = 'config.yaml'
@@ -52,7 +52,7 @@ NUM_CLASSES = len(_meta.thing_classes)
 cfg = get_cfg()
 cfg.merge_from_file(model_zoo.get_config_file(base_config_file))
 cfg.DATASETS.TRAIN = (datasetname+'_train',)
-cfg.DATASETS.TEST = ()
+cfg.DATASETS.TEST = (datasetname+'_valid',)
 cfg.DATALOADER.NUM_WORKERS = 2
 cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(base_config_file)
 cfg.SOLVER.IMS_PER_BATCH = IMS_PER_BATCH
@@ -61,8 +61,10 @@ cfg.SOLVER.MAX_ITER = MAX_ITER
 cfg.SOLVER.STEPS = []        # do not decay learning rate
 
 cfg.OUTPUT_DIR = output_dir
-
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = NUM_CLASSES
+
+cfg.TEST.AUG.ENABLED = True
+cfg.TEST.EVAL_PERIOD = 100
 
 os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 os.makedirs(config_dir, exist_ok=True)
