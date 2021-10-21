@@ -25,23 +25,40 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultPredictor
 from detectron2 import model_zoo
-
+import utils
 #%%
 base_config_file = "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
-config_dir = '../configs'
-output_dir = '../output'
-MAX_ITER = 100
+config_dir = './configs/chess'
+output_dir = './output'
+datasetname = 'chess'
+MAX_ITER = 1000
 IMS_PER_BATCH = 2
 
 config_name = 'config.yaml'
-
 config_path = os.path.join(config_dir,config_name)
 
+#%%
+# utils.loadCocoDataset(
+#     dataset_path = '../../../../datasets',
+#     dataset_name = datasetname)
 
+utils.register_Dataset(
+    label_names = ['white-king', 'white-queen', 'white-bishop', 'white-knight', 'white-rook', 'white-pawn','black-king','black-queen', 'black-bishop', 'black-knight', 'black-rook', 'black-pawn','bishop'],
+    dataset_name='chess'
+)
+
+ds_test = DatasetCatalog.get(f"{datasetname}_test")
+_meta = MetadataCatalog.get(f"{datasetname}_test") # 메타데이터 추출 
+print(_meta.thing_classes)
+print(f'class num : {len(_meta.thing_classes)}')
+NUM_CLASSES = len(_meta.thing_classes)
+
+
+#%%
 cfg = get_cfg()
 cfg.merge_from_file(model_zoo.get_config_file(base_config_file))
-cfg.DATASETS.TRAIN = ("microcontroller_train",)
-cfg.DATASETS.TEST = ()
+cfg.DATASETS.TRAIN = (datasetname+'_train',datasetname+'_valid')
+cfg.DATASETS.TEST = (datasetname+'_test',)
 cfg.DATALOADER.NUM_WORKERS = 2
 cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(base_config_file)
 cfg.SOLVER.IMS_PER_BATCH = IMS_PER_BATCH
@@ -50,8 +67,11 @@ cfg.SOLVER.MAX_ITER = MAX_ITER
 cfg.SOLVER.STEPS = []        # do not decay learning rate
 
 cfg.OUTPUT_DIR = output_dir
+cfg.MODEL.ROI_HEADS.NUM_CLASSES = NUM_CLASSES
 
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = 4
+# cfg.TEST.AUG.ENABLED = True
+# cfg.TEST.EVAL_PERIOD = 100
+cfg.TEST.EVAL_PERIOD = 0
 
 os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 os.makedirs(config_dir, exist_ok=True)

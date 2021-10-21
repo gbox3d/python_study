@@ -28,8 +28,8 @@ from detectron2 import model_zoo
 import utils
 #%%
 base_config_file = "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
-config_dir = '../configs/AmericanMushromms'
-output_dir = '../output'
+config_dir = './configs/AmericanMushromms'
+output_dir = './output/AmericanMushromms'
 datasetname = 'AmericanMushromms'
 MAX_ITER = 5000
 IMS_PER_BATCH = 2

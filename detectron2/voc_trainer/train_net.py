@@ -38,7 +38,8 @@ from detectron2.evaluation import (
     verify_results,
 )
 from detectron2.modeling import GeneralizedRCNNWithTTA
-from detectron2.data.datasets import register_coco_instances
+# from detectron2.data.datasets import register_coco_instances
+import utils
 
 
 def build_evaluator(cfg, dataset_name, output_folder=None):
@@ -121,12 +122,10 @@ def setup(args):
     """
     Create configs and perform basic setups.
     """
-    for d in ["train", "test"]:
-        register_coco_instances(
-        f"microcontroller_{d}", 
-        {},
-        f"../../datasets/Microcontroller Segmentation/{d}.json",
-        f"../../datasets/Microcontroller Segmentation/{d}"
+
+    utils.register_Dataset(
+        label_names = ['white-king', 'white-queen', 'white-bishop', 'white-knight', 'white-rook', 'white-pawn','black-king','black-queen', 'black-bishop', 'black-knight', 'black-rook', 'black-pawn','bishop'],
+        dataset_name='chess'
     )
 
     cfg = get_cfg()

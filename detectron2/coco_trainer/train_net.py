@@ -41,7 +41,9 @@ from detectron2.modeling import GeneralizedRCNNWithTTA
 from detectron2.data.datasets import register_coco_instances
 
 from detectron2.data import DatasetMapper, build_detection_test_loader
-import LossEvalHook 
+# import LossEvalHook 
+# import customEvaluator
+import utils
 
 def build_evaluator(cfg, dataset_name, output_folder=None):
     """
@@ -64,6 +66,8 @@ def build_evaluator(cfg, dataset_name, output_folder=None):
         )
     if evaluator_type in ["coco", "coco_panoptic_seg"]:
         evaluator_list.append(COCOEvaluator(dataset_name, output_dir=output_folder))
+        # evaluator_list.append(customEvaluator.COCOEvaluator(dataset_name, output_dir=output_folder))
+
     if evaluator_type == "coco_panoptic_seg":
         evaluator_list.append(COCOPanopticEvaluator(dataset_name, output_folder))
     if evaluator_type == "cityscapes_instance":
@@ -87,7 +91,6 @@ def build_evaluator(cfg, dataset_name, output_folder=None):
     elif len(evaluator_list) == 1:
         return evaluator_list[0]
     return DatasetEvaluators(evaluator_list)
-
 
 class Trainer(DefaultTrainer):
     """
@@ -120,7 +123,7 @@ class Trainer(DefaultTrainer):
 
     def build_hooks(self):
         hooks = super().build_hooks()
-        hooks.insert(-1,LossEvalHook.LossEvalHook(
+        hooks.insert(-1,utils.LossEvalHook(
             self.cfg.TEST.EVAL_PERIOD,
             self.model,
             build_detection_test_loader(
@@ -129,25 +132,20 @@ class Trainer(DefaultTrainer):
                 DatasetMapper(self.cfg,True)
             )
         ))
+        # swap the order of PeriodicWriter and ValidationLoss
+        # code hangs with no GPUs > 1 if this line is removed
+        hooks = hooks[:-2] + hooks[-2:][::-1]
         return hooks
 
-import utils
+
 def setup(args):
     """
     Create configs and perform basic setups.
     """
     utils.loadCocoDataset(
-    dataset_path = '../../../../datasets',
-    dataset_name = "AmericanMushromms")
-
-    # for d in ["train", "test"]:
-    #     register_coco_instances(
-    #     f"microcontroller_{d}", 
-    #     {},
-    #     f"../../datasets/Microcontroller Segmentation/{d}.json",
-    #     f"../../datasets/Microcontroller Segmentation/{d}"
-    # )
-
+        dataset_path = '../../../../datasets',
+        dataset_name = "AmericanMushromms")
+    
     cfg = get_cfg()
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
