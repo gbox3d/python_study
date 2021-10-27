@@ -31,7 +31,7 @@ base_config_file = "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
 config_dir = './configs/AmericanMushromms'
 output_dir = './output/AmericanMushromms'
 datasetname = 'AmericanMushromms'
-MAX_ITER = 5000
+MAX_ITER = 10000
 IMS_PER_BATCH = 2
 
 config_name = 'config.yaml'

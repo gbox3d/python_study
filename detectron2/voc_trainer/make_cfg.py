@@ -69,9 +69,9 @@ cfg.SOLVER.STEPS = []        # do not decay learning rate
 cfg.OUTPUT_DIR = output_dir
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = NUM_CLASSES
 
-# cfg.TEST.AUG.ENABLED = True
-# cfg.TEST.EVAL_PERIOD = 100
-cfg.TEST.EVAL_PERIOD = 0
+cfg.TEST.AUG.ENABLED = True
+cfg.TEST.EVAL_PERIOD = 100
+
 
 os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 os.makedirs(config_dir, exist_ok=True)

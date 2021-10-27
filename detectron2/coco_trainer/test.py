@@ -60,14 +60,14 @@ config_path = './configs/AmericanMushromms/config.yaml'
 cfg = get_cfg()
 cfg.merge_from_file(config_path)
 cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
-cfg.MODEL.WEIGHTS = './output/model_final.pth'
+cfg.MODEL.WEIGHTS = './output/AmericanMushromms/model_final.pth'
 # cfg.MODEL.ROI_HEADS.NUM_CLASSES = 4
 # instance segmentation predictor
-instance_segmentation_predictor = DefaultPredictor(cfg)
+predictor = DefaultPredictor(cfg)
 
 #%%
 start_tick = time.time()
-outputs = instance_segmentation_predictor(img)
+outputs = predictor(img)
 # using `Visualizer` to draw the predictions on the image.
 v = Visualizer( cv2.cvtColor(img,cv2.COLOR_BGR2RGB), _meta, scale=1.0)
 out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
@@ -75,37 +75,37 @@ print(f'delay { time.time() - start_tick }')
 display( Image.fromarray(out.get_image()))
 
 # %%
-experiment_folder = './output'
+# experiment_folder = './output'
 
-def load_json_arr(json_path):
-    lines = []
-    with open(json_path, 'r') as f:
-        for line in f:
-            lines.append(json.loads(line))
-    return lines
+# def load_json_arr(json_path):
+#     lines = []
+#     with open(json_path, 'r') as f:
+#         for line in f:
+#             lines.append(json.loads(line))
+#     return lines
 
-experiment_metrics = load_json_arr(experiment_folder + '/metrics.json')
+# experiment_metrics = load_json_arr(experiment_folder + '/metrics.json')
 
-#%%
-for x in experiment_metrics :
+# #%%
+# for x in experiment_metrics :
     
-    print(x)
+#     print(x)
 
-# %%
-plt.plot(
-    [x['iteration'] for x in experiment_metrics], 
-    [x['total_loss'] for x in experiment_metrics])
-plt.plot(
-    [x['iteration'] for x in experiment_metrics if 'validation_loss' in x], 
-    [x['validation_loss'] for x in experiment_metrics if 'validation_loss' in x])
-plt.legend(['total_loss', 'validation_loss'], loc='upper left')
-plt.show()
-# %%
-for x in experiment_metrics :
-    if 'total_loss' in x.keys():
-        print(x['iteration'])
-        print(x['total_loss'])
-# experiment_metrics[0]['total_loss']
+# # %%
+# plt.plot(
+#     [x['iteration'] for x in experiment_metrics], 
+#     [x['total_loss'] for x in experiment_metrics])
+# plt.plot(
+#     [x['iteration'] for x in experiment_metrics if 'validation_loss' in x], 
+#     [x['validation_loss'] for x in experiment_metrics if 'validation_loss' in x])
+# plt.legend(['total_loss', 'validation_loss'], loc='upper left')
+# plt.show()
+# # %%
+# for x in experiment_metrics :
+#     if 'total_loss' in x.keys():
+#         print(x['iteration'])
+#         print(x['total_loss'])
+# # experiment_metrics[0]['total_loss']
 
 
-# %%
+# # %%
