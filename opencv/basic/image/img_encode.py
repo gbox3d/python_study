@@ -17,7 +17,7 @@ encode_param=[int(cv.IMWRITE_JPEG_QUALITY),90]
 _,_encodee_img = cv.imencode('.jpg',img,encode_param)
 
 with open('./test.jpg','wb') as fd :
-    fd.write( _encodee_img )
+    fd.write( _encodee_img.tobytes() )
 
 #%%
 
