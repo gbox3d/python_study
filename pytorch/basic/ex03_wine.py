@@ -3,7 +3,6 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from torch.nn.modules.loss import MSELoss
 import torch.nn.functional as F
 
 from sklearn.preprocessing import StandardScaler # 데이터 정규화를 위한 라이브러리 
@@ -11,6 +10,11 @@ from sklearn.preprocessing import StandardScaler # 데이터 정규화를 위한
 #%%
 # _csv_data = np.loadtxt(fname='../data/gate.csv', delimiter=',',skiprows=1,dtype=np.float32)
 _csv_data = np.loadtxt(fname='../data/wine.csv', delimiter=',',skiprows=1,dtype=np.float32)
+#%%
+np.random.shuffle(_csv_data)
+print(_csv_data[:,[0]])
+
+#%%
 
 __X = _csv_data[:,1:]
 
@@ -59,4 +63,11 @@ for epoch in range(10000) :
 # %%
 print(model( X[0]) , Y[0] )
 print(model( X[150]) , Y[150] )
+# %%
+corect_count = 0
+for index in range(178) :
+  if round( model(X[index]).item()) == Y[index] :
+    corect_count +=1
+
+print( f'acc : {((corect_count / 178) * 100)}%'  )
 # %%
