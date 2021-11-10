@@ -89,11 +89,11 @@ while True:
                 print(f'current data size : {_data.__sizeof__()}')
 
                 #파이썬의 빈 바이트 버퍼 크기는 33이다.(실제 바이트 수에서 33을 더해준 값이다.)
-                # while len(_data) < _data_size :
-                while True :
+                while len(_data) < _data_size :
+                # while True :
                 # while _data.__sizeof__() < _data_size + 33 :
                     l = client_socket.recv(buff_size)
-                    if len(l) == 0 : break;
+                    # if len(l) == 0 : break;
                     print(l.__sizeof__() ,len(l) )
                     _data += l
 
