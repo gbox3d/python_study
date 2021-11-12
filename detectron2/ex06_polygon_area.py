@@ -25,7 +25,7 @@ import numpy as np
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
-from detectron2.utils.visualizer import Visualizer
+from detectron2.utils.visualizer import Visualizer,GenericMask
 from detectron2.data import MetadataCatalog, DatasetCatalog
 
 print(f'detectron : {detectron2.__version__}')
@@ -49,10 +49,12 @@ start_tick = time.time()
 outputs = instance_segmentation_predictor(img)
 print(f'delay { time.time() - start_tick }')
 
-# %%
+# %% mask pixel count 
 pred_masks = outputs["instances"].pred_masks
 for mask in pred_masks:
     mask = mask.cpu().numpy()
-    # mask = mask.astype(np.uint8)
+    print( f'mask pixel count : {np.count_nonzero(mask)}' )
+
+    mask.astype(np.uint8)
     display(Image.fromarray(mask))
 # %%

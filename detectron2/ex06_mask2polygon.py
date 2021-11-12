@@ -6,26 +6,21 @@ print(f'torch : {torch.__version__}' )
 print(f'cuda : {torch.cuda.is_available()}')
 print(f'cv version : {cv2.__version__}')
 
-
 #%%
 import time
 import PIL.Image as Image
 from IPython.display import display
 
 
-# Setup detectron2 logger
-import detectron2
-# from detectron2.utils.logger import setup_logger
-# setup_logger()
-
 # import some common libraries
 import numpy as np
 
+import detectron2
 # import some common detectron2 utilities
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
-from detectron2.utils.visualizer import Visualizer
+from detectron2.utils.visualizer import Visualizer,GenericMask
 from detectron2.data import MetadataCatalog, DatasetCatalog
 
 print(f'detectron : {detectron2.__version__}')
@@ -47,12 +42,15 @@ instance_segmentation_predictor = DefaultPredictor(cfg_instance_seg)
 #%%
 start_tick = time.time()
 outputs = instance_segmentation_predictor(img)
+# predict = outputs["instances"].to("cpu")
 print(f'delay { time.time() - start_tick }')
 
-# %%
+# %% mask pixel count 
 pred_masks = outputs["instances"].pred_masks
 for mask in pred_masks:
     mask = mask.cpu().numpy()
-    # mask = mask.astype(np.uint8)
-    display(Image.fromarray(mask))
-# %%
+    _mask = GenericMask(mask, img.shape[0], img.shape[1])
+    np_cnt = np.array(_mask.polygons,dtype=np.int32).reshape((-1, 2))
+    out_img = cv2.polylines(_mask.mask, [np_cnt], True, (4), thickness=1)
+    display(Image.fromarray(out_img * 63))
+    print( f'mask pixel count : {np.count_nonzero(_mask.mask != 0)}' )
