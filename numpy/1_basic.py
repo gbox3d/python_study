@@ -63,4 +63,20 @@ print(_a1)
 _a1[2:5] = _a2[3:6]
 print(_a1)
 
+#%%
+a = np.zeros(10)
+print(a)
 
+# %%
+a = np.zeros((3,) )
+print(a)
+
+# %%
+a = np.zeros((3,) + (2,2)) # (3,2,2) 형식이 만들어짐 
+print(a)
+print(a.shape)
+# %%
+a = np.zeros((3,) + (1,)) # (3,1) 형식이 만들어이짐
+print(a) 
+print(a.shape)
+# %%
