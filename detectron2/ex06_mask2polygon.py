@@ -46,11 +46,27 @@ outputs = instance_segmentation_predictor(img)
 print(f'delay { time.time() - start_tick }')
 
 # %% mask pixel count 
-pred_masks = outputs["instances"].pred_masks
+pred_masks = outputs["instances"].pred_masks.cpu().numpy()
 for mask in pred_masks:
-    mask = mask.cpu().numpy()
+    # mask = mask.cpu().numpy()
     _mask = GenericMask(mask, img.shape[0], img.shape[1])
     np_cnt = np.array(_mask.polygons,dtype=np.int32).reshape((-1, 2))
     out_img = cv2.polylines(_mask.mask, [np_cnt], True, (4), thickness=1)
     display(Image.fromarray(out_img * 63))
     print( f'mask pixel count : {np.count_nonzero(_mask.mask != 0)}' )
+
+# %%
+print(outputs["instances"].pred_classes.cpu().numpy().tobytes())
+print(outputs["instances"].scores.cpu().numpy().tobytes())
+print( np.array([box.cpu().numpy() for box in outputs["instances"].pred_boxes]).tobytes() )
+
+# %%
+generic_masks = [GenericMask(x, img.shape[0], img.shape[1]) for x in pred_masks]
+
+#%%
+for gen_mask in generic_masks:
+    print(np.array(gen_mask.polygons).shape)
+    
+    # mask = mask.cpu().numpy()
+
+# %%
