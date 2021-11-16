@@ -26,7 +26,7 @@ from detectron2.data import MetadataCatalog, DatasetCatalog
 
 print(f'detectron : {detectron2.__version__}')
 #%% object detection
-img = cv2.imread("./bird1.jpg")
+img = cv2.imread("../../bird1.jpg")
 print(img.shape)
 display(Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB)))
 

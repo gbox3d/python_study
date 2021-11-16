@@ -6,12 +6,10 @@ print(f'torch : {torch.__version__}' )
 print(f'cuda : {torch.cuda.is_available()}')
 print(f'cv version : {cv2.__version__}')
 
-
 #%%
 import time
 import PIL.Image as Image
 from IPython.display import display
-
 
 # Setup detectron2 logger
 import detectron2
@@ -30,7 +28,7 @@ from detectron2.data import MetadataCatalog, DatasetCatalog
 
 print(f'detectron : {detectron2.__version__}')
 #%% object detection
-img = cv2.imread("./bird1.jpg")
+img = cv2.imread("../../bird1.jpg")
 print(img.shape)
 display(Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB)))
 
@@ -50,9 +48,24 @@ outputs = instance_segmentation_predictor(img)
 print(f'delay { time.time() - start_tick }')
 
 # %%
+scale = 0.5
 pred_masks = outputs["instances"].pred_masks
 for mask in pred_masks:
     mask = mask.cpu().numpy()
-    # mask = mask.astype(np.uint8)
-    display(Image.fromarray(mask))
+    mask.astype(np.uint8)
+    # contours 추출 
+    contours, hierarchy = cv2.findContours(mask.astype("uint8"), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    cnt = [x.flatten() for x in contours]
+    cnt = [x + 0.5 for x in cnt if len(x) >= 6]
+
+    np_cnt = np.array(cnt, dtype=np.int32)
+    np_cnt = np_cnt.reshape((-1, 2)) * scale
+    np_cnt = np_cnt.astype(np.int32)
+
+    out_img = np.zeros((np.array(mask.shape)*scale).astype(np.int32), dtype=np.uint8)
+    out_img = cv2.polylines(out_img, [np_cnt], True, (255), thickness=1)
+    display(Image.fromarray(out_img))
+
+    # display(Image.fromarray(mask))
+
 # %%
