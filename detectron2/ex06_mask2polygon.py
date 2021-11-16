@@ -1,4 +1,5 @@
 #%%
+from os import major
 import torch
 # import torchvision
 import cv2
@@ -35,8 +36,6 @@ cfg_instance_seg = get_cfg()
 cfg_instance_seg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
 cfg_instance_seg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
 cfg_instance_seg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
-
-
 # instance segmentation predictor
 instance_segmentation_predictor = DefaultPredictor(cfg_instance_seg)
 #%%
@@ -50,10 +49,36 @@ pred_masks = outputs["instances"].pred_masks.cpu().numpy()
 for mask in pred_masks:
     # mask = mask.cpu().numpy()
     _mask = GenericMask(mask, img.shape[0], img.shape[1])
-    np_cnt = np.array(_mask.polygons,dtype=np.int32).reshape((-1, 2))
+    _total_mask_size = img.shape[0] * img.shape[1]
+    np_cnt = np.array(_mask.polygons,dtype=np.int32).reshape(-1,2)
     out_img = cv2.polylines(_mask.mask, [np_cnt], True, (4), thickness=1)
+    
+    _pixel_count = np.count_nonzero(_mask.mask != 0)  # 픽셀 부피 출력
+    _contour_area = cv2.contourArea(np_cnt)  # 컨투어 면적 출력
+    # _equivalent_diameter = np.sqrt(_contour_area / np.pi)  # 마스크 면적과 동일한 원의 반지름
+    (x,y),radius = cv2.minEnclosingCircle(np_cnt) # 감싸는 원의 중심과 반지름 출력
+    out_img = cv2.circle(out_img,(int(x),int(y)),int(radius),(3),2)
+    print( f'mask pixel count : {_pixel_count} , area : {_contour_area}' )
+    print( f'mask radius :  , {radius}' )
+
+
+#전체화면크기에서 컨투어 면적을 비율로 계산하여 정수로 변환
+    _contour_area_rate = _contour_area/_total_mask_size
+    print( f'area rate :  {_contour_area_rate}')
+
+    _solidity = _contour_area / cv2.contourArea(cv2.convexHull(np_cnt)) #1가까울수록 볼록 다각형 작을 수록 오목한정도가 커짐 
+    print( f'solidity : {_solidity}' )
+
+    (x,y),(majorAxis,minorAxis),angle = cv2.fitEllipse(np_cnt) # 객체의 중심좌표와 반지름과 기울기를 구함
+    print( f'ellipse : [{x},{y}],[{majorAxis},{minorAxis}],{angle}' )
+
+    out_img = cv2.ellipse(out_img,(int(x),int(y)),(int(majorAxis),int(minorAxis)),angle,0,360,(2.5),2)
+    # out_img = cv2.circle(out_img, (int(x),int(y)), int(_equivalent_diameter), (3), 2)
+
+    
+
     display(Image.fromarray(out_img * 63))
-    print( f'mask pixel count : {np.count_nonzero(_mask.mask != 0)}' )
+    
 
 # %%
 print(outputs["instances"].pred_classes.cpu().numpy().tobytes())
@@ -67,6 +92,3 @@ generic_masks = [GenericMask(x, img.shape[0], img.shape[1]) for x in pred_masks]
 for gen_mask in generic_masks:
     print(np.array(gen_mask.polygons).shape)
     
-    # mask = mask.cpu().numpy()
-
-# %%
