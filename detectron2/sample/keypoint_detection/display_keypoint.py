@@ -35,7 +35,7 @@ _cfg = get_cfg()
 _cfg.merge_from_file(model_zoo.get_config_file("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml"))
 _cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
 _cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml")
-
+_cfg.MODEL.DEVICE = 'cpu' # device를 cpu로 선택 
 # Keypoints predictor
 _predictor = DefaultPredictor(_cfg)
 #%%
