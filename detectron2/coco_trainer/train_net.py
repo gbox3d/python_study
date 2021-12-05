@@ -143,8 +143,24 @@ def setup(args):
     Create configs and perform basic setups.
     """
     utils.loadCocoDataset(
-        dataset_path = '../../../../datasets',
-        dataset_name = "AmericanMushromms")
+        dataset_path = '../../../../datasets/mushroom_data',
+        image_root = '_image',
+        # dataset_name = "AmericanMushromms")
+        dataset_name = "yangsongyi")
+
+    # dataset_path = '../../../../datasets/mushroom_data'
+    # dataset_name = "yangsongyi"
+
+    # for d in ["train","test","valid"]:
+    #     print(f"{dataset_name}_{d}")
+    #     register_coco_instances(
+    #         f"{dataset_name}_{d}", 
+    #         {},
+    #         os.path.join(dataset_path,dataset_name,'_image',d+'.json'),
+    #         # f"{}/{d}.json",
+    #         os.path.join(dataset_path,dataset_name,'_image')
+    #     )
+    #     print(f"{dataset_name}_{d}",os.path.join(dataset_path,dataset_name,'_images'))
     
     cfg = get_cfg()
     cfg.merge_from_file(args.config_file)

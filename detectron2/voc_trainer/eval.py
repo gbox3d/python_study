@@ -51,7 +51,7 @@ print(len(data_loader))
 for idx, inputs in enumerate(data_loader):  
     # print(inputs)
     metrics_dict = predictor.model(inputs)
-    print(metrics_dict.values)
+    print(metrics_dict)
 
     # for k, v in metrics_dict.items() :
     #     print(k,isinstance(v, torch.Tensor))

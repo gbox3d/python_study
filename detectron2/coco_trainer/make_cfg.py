@@ -27,10 +27,17 @@ from detectron2.engine import DefaultPredictor
 from detectron2 import model_zoo
 import utils
 #%%
-base_config_file = "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
-config_dir = './configs/AmericanMushromms'
-output_dir = './output/AmericanMushromms'
-datasetname = 'AmericanMushromms'
+base_config_file = "COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml"
+# base_config_file = "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
+# config_dir = './configs/AmericanMushromms'
+# output_dir = './output/AmericanMushromms'
+# datasetname = 'AmericanMushromms'
+
+config_dir = './configs/mushroom_data'
+output_dir = './output/mushroom_data'
+datasetname = 'yangsongyi'
+
+
 MAX_ITER = 10000
 IMS_PER_BATCH = 2
 
@@ -39,7 +46,7 @@ config_path = os.path.join(config_dir,config_name)
 
 #%%
 utils.loadCocoDataset(
-    dataset_path = '../../../../datasets',
+    dataset_path = '../../../../datasets/mushroom_data',
     dataset_name = datasetname)
 ds_test = DatasetCatalog.get(f"{datasetname}_test")
 _meta = MetadataCatalog.get(f"{datasetname}_test") # 메타데이터 추출 
