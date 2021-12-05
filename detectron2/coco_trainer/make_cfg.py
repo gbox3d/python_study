@@ -47,6 +47,7 @@ config_path = os.path.join(config_dir,config_name)
 #%%
 utils.loadCocoDataset(
     dataset_path = '../../../../datasets/mushroom_data',
+    image_root='_image',
     dataset_name = datasetname)
 ds_test = DatasetCatalog.get(f"{datasetname}_test")
 _meta = MetadataCatalog.get(f"{datasetname}_test") # 메타데이터 추출 
