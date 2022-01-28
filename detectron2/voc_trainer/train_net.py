@@ -119,16 +119,18 @@ class Trainer(DefaultTrainer):
         return res
     
     def build_hooks(self):
+        
         hooks = super().build_hooks()
-        hooks.insert(-1,utils.LossEvalHook(
-            self.cfg.TEST.EVAL_PERIOD,
-            self.model,
-            build_detection_test_loader(
-                self.cfg,
-                self.cfg.DATASETS.TEST[0],
-                DatasetMapper(self.cfg,True)
-            )
-        ))
+        if self.cfg.TEST.AUG.ENABLED:
+            hooks.insert(-1,utils.LossEvalHook(
+                self.cfg.TEST.EVAL_PERIOD,
+                self.model,
+                build_detection_test_loader(
+                    self.cfg,
+                    self.cfg.DATASETS.TEST[0],
+                    DatasetMapper(self.cfg,True)
+                )
+            ))
         # swap the order of PeriodicWriter and ValidationLoss
         # code hangs with no GPUs > 1 if this line is removed
         hooks = hooks[:-2] + hooks[-2:][::-1]
@@ -141,8 +143,10 @@ def setup(args):
     """
 
     utils.register_Dataset(
+        dataset_path=args.dataset_path,
+        # dataset_path="/home/gbox3d/work/disk_a/datasets/",
         label_names = ['white-king', 'white-queen', 'white-bishop', 'white-knight', 'white-rook', 'white-pawn','black-king','black-queen', 'black-bishop', 'black-knight', 'black-rook', 'black-pawn','bishop'],
-        dataset_name='chess'
+        dataset_name=args.dataset_name
     )
 
     cfg = get_cfg()
@@ -175,6 +179,7 @@ def main(args):
     """
     trainer = Trainer(cfg)
     trainer.resume_or_load(resume=args.resume)
+
     if cfg.TEST.AUG.ENABLED:
         trainer.register_hooks(
             [hooks.EvalHook(0, lambda: trainer.test_with_TTA(cfg, trainer.model))]
@@ -183,7 +188,16 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = default_argument_parser().parse_args()
+    
+    _argParser =  default_argument_parser()
+    _argParser.add_argument('--dataset-path', type=str, default='../../datasets/mushroom_data')
+    _argParser.add_argument('--dataset-name', type=str, default='yangsongyi')
+    # _argParser.add_argument('--image-root', type=str, default='_image')
+
+    # args = default_argument_parser().parse_args()
+    args = _argParser.parse_args()
+
+
     print("Command Line Args:", args)
     launch(
         main,

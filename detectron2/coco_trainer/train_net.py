@@ -143,10 +143,13 @@ def setup(args):
     Create configs and perform basic setups.
     """
     utils.loadCocoDataset(
-        dataset_path = '../../../../datasets/mushroom_data',
-        image_root = '_image',
-        # dataset_name = "AmericanMushromms")
-        dataset_name = "yangsongyi")
+        # dataset_path = '../../../../datasets/mushroom_data',
+        # image_root = '_image',
+        # dataset_name = "yangsongyi"
+        dataset_path = args.dataset_path,
+        image_root = args.image_root,
+        dataset_name = args.dataset_name
+        )
 
     # dataset_path = '../../../../datasets/mushroom_data'
     # dataset_name = "yangsongyi"
@@ -200,7 +203,15 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = default_argument_parser().parse_args()
+
+    _argParser =  default_argument_parser()
+    _argParser.add_argument('--dataset-path', type=str, default='../../datasets/mushroom_data')
+    _argParser.add_argument('--dataset-name', type=str, default='yangsongyi')
+    _argParser.add_argument('--image-root', type=str, default='_image')
+
+    # args = default_argument_parser().parse_args()
+    args = _argParser.parse_args()
+    
     print("Command Line Args:", args)
     launch(
         main,

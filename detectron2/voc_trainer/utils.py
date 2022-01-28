@@ -72,12 +72,12 @@ def loadVocDataset(dataset_path,dataset_name,sets_name,classes) :
     # print(dataset_dicts)
     return dataset_dicts
 
-def register_Dataset(label_names,dataset_name) :
+def register_Dataset(label_names,dataset_path,dataset_name) :
     for d in ['train','valid','test'] :
         # label_names = ['white-king', 'white-queen', 'white-bishop', 'white-knight', 'white-rook', 'white-pawn','black-king','black-queen', 'black-bishop', 'black-knight', 'black-rook', 'black-pawn']
         DatasetCatalog.register(f"{dataset_name}_{d}" , 
                 lambda d=d: loadVocDataset(
-                        dataset_path='../../../../datasets',
+                        dataset_path=dataset_path,
                         dataset_name=dataset_name,
                         sets_name=d,
                         classes=label_names
