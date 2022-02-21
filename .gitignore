@@ -9,3 +9,6 @@ opencv/basic/image/*.jpg
 res/
 
 .vscode/
+
+yolov5/runs
+yolov5/*.pt
