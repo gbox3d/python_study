@@ -13,7 +13,7 @@ import torch
 # check pytorch installation:
 print(torch.__version__, torch.cuda.is_available())
 # please manually install torch 1.9 if Colab changes its default version
-assert torch.__version__.startswith("1.9")
+# assert torch.__version__.startswith("1.9")
 
 from detectron2.engine import DefaultTrainer
 from detectron2.config import get_cfg
