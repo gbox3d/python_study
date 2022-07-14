@@ -31,7 +31,7 @@ print(f'detectron {detectron2.__version__}')
 
 
 #%%
-im = cv2.imread("../res/input.jpg")
+im = cv2.imread("bird1.jpg")
 display( Image.fromarray(cv2.cvtColor(im,cv2.COLOR_BGR2RGB)))
 
 
