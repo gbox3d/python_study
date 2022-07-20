@@ -5,7 +5,10 @@ python voc2coco.py -d=/home/ubiqos-ai2/work/datasets/bitles -n=dic_1009 -o=/home
 python voc2coco.py -d=/home/ubiqos-ai2/work/visionApp/datasets/test3 -n=fruts_nuts -o=/home/ubiqos-ai2/work/visionApp/datasets/test3/fruts_nuts/anno.json
 python voc2coco.py -d=/home/ubiqos-ai2/work/visionApp/datasets/test3 -n=dic_1004 -o=/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004/anno.json
 
-```
+python voc2coco.py -d=/home/ubiqos/work/dataset/test2/dic_1011 -n=dic_1011 -o=/home/ubiqos/work/visionApp/annos/dic_1011/anno.json
+python voc2coco.py -d=/home/ubiqos/work/dataset/test2/dic_hongy15 -n=dic_hongy15 -o=/home/ubiqos/work/visionApp/annos/dic_hongy15/anno.json
+python voc2coco.py -d=/home/ubiqos/work/dataset/test2/dic_sso3961 -n=dic_sso3961 -o=/home/ubiqos/work/visionApp/annos/dic_sso3961/anno.json
+
 ```
 
 
@@ -41,26 +44,19 @@ python coco_spliter.py --img-path=/home/ubiqos-ai2/work/visionApp/datasets/test3
 
 ```yaml
 dataset:
-  name: "Microcontroller Segmentation"
-  train_set: 
-    anno: "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/train.json"
-    img_dir: "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/train"
-  test_set: 
-    anno: "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/test.json"
-    img_dir: "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/test"
-  val_set: 
-    anno: "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/val.json"
-    img_dir: "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/val"
-eval: 
-  anno: "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/test.json"
-  img_dir: "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/test"
-  weight: "/home/ubiqos-ai2/work/visionApp/python_study/detectron2/coco_trainer/output/model_final.pth" 
+  name: "dic_1004"
 cfg:
-  base_config_file: "COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml"
+  base_config_file: "COCO-InstanceSegmentation/mask_rcnn_R_50_C4_1x.yaml"
   max_iter: 1000
   ims_per_batch : 2
-config_dir: "./test/configs"
-output_dir: "./test/output"
+  config_dir: "./configs"
+  output_dir: "./output/dic_1004/mask_rcnn_R_50_C4_1x"
+train_set: 
+  anno: "/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004/train.json"
+  img_dir: "/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004/voc"
+test_set: 
+  anno: "/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004/test.json"
+  img_dir: "/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004/voc"
 
 ```
 

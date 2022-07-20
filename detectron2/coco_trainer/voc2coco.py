@@ -12,10 +12,10 @@ import uuid
 import json
 
 
-from detectron2.structures import BoxMode
-from detectron2.data import MetadataCatalog,DatasetCatalog
-from detectron2.utils import comm
-from detectron2.utils.file_io import PathManager
+# from detectron2.structures import BoxMode
+# from detectron2.data import MetadataCatalog,DatasetCatalog
+# from detectron2.utils import comm
+# from detectron2.utils.file_io import PathManager
 
 obj_id_generator = 0
 # img_id_generator = 1
