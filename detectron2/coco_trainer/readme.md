@@ -5,6 +5,9 @@ python voc2coco.py -d=/home/ubiqos-ai2/work/datasets/bitles -n=dic_1009 -o=/home
 python voc2coco.py -d=/home/ubiqos-ai2/work/visionApp/datasets/test3 -n=fruts_nuts -o=/home/ubiqos-ai2/work/visionApp/datasets/test3/fruts_nuts/anno.json
 python voc2coco.py -d=/home/ubiqos-ai2/work/visionApp/datasets/test3 -n=dic_1004 -o=/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004/anno.json
 
+python voc2coco.py -d=/home/ubiqos/work/dataset/test1/202271004 -n=dic_1004 -o=/home/ubiqos/work/visionApp/annos/dic_1004/anno.json
+python voc2coco.py -d=/home/ubiqos/work/dataset/test1/dic_1009 -n=dic_1009 -o=/home/ubiqos/work/visionApp/annos/dic_1009/anno.json
+
 python voc2coco.py -d=/home/ubiqos/work/dataset/test2/dic_1011 -n=dic_1011 -o=/home/ubiqos/work/visionApp/annos/dic_1011/anno.json
 python voc2coco.py -d=/home/ubiqos/work/dataset/test2/dic_hongy15 -n=dic_hongy15 -o=/home/ubiqos/work/visionApp/annos/dic_hongy15/anno.json
 python voc2coco.py -d=/home/ubiqos/work/dataset/test2/dic_sso3961 -n=dic_sso3961 -o=/home/ubiqos/work/visionApp/annos/dic_sso3961/anno.json
@@ -32,6 +35,25 @@ python coco_spliter.py --img-path=/home/ubiqos-ai2/work/visionApp/datasets/test3
 python coco_spliter.py --img-path=/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004 --json-path=/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004/anno.json --output-path=/home/ubiqos-ai2/work/visionApp/datasets/test3/dic_1004  --train-ratio=0.8
 
 
+```
+
+## mergy
+
+cmd 파일 예시
+
+```yaml
+list:
+  - '/home/ubiqos/work/visionApp/annos/dic_1011/anno.json'
+  - '/home/ubiqos/work/visionApp/annos/dic_hongy15/anno.json'
+  - '/home/ubiqos/work/visionApp/annos/dic_sso3961/anno.json'
+  - /home/ubiqos/work/visionApp/annos/dic_1004/anno.json
+  - /home/ubiqos/work/visionApp/annos/dic_1009/anno.json
+save_name: '../../../annos/all.json'
+```
+
+예>
+```bash
+python coco_mergy.py -c ./temp/mergy_cmd.yaml
 ```
 
 ## settings 
