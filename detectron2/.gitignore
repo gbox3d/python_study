@@ -2,3 +2,5 @@ output/
 configs/
 out.jpg
 dataset/
+temp/
+settings/

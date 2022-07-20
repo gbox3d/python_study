@@ -25,6 +25,16 @@ from detectron2.config import get_cfg
 from detectron2.engine import DefaultPredictor
 from detectron2 import model_zoo
 
+import yaml
+
+#%%
+with open('./settings.yaml') as f :
+    _config = yaml.load(f, Loader=yaml.FullLoader)
+    print(_config)
+
+#%%
+
+
 #%%
 cfg = get_cfg()
 cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))

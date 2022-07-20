@@ -44,109 +44,68 @@ from detectron2.evaluation import (
     print_csv_format,
 )
 
-from roboflow import Roboflow
 
-from matplotlib import pyplot as plt
-from PIL import Image
+import yaml
+
+# from matplotlib import pyplot as plt
+# from PIL import Image
+
+settgins_file = './settings.yaml'
+#%%
+import argparse
+parser = argparse.ArgumentParser(description="argument parser sample")
+
+parser.add_argument(
+    '-s','--settings', type=str, 
+    default='./settings.yaml',
+    help='choose  your settings file')
+
+settgins_file = parser.parse_args().settings
+
+
+#%%
+
+with open(settgins_file) as f :
+    _config = yaml.load(f, Loader=yaml.FullLoader)
+    print(_config)
+
 # %%
 #load dataset
-VERSION = 2
+# VERSION = 2
+# from roboflow import Roboflow
 # rf = Roboflow(api_key="-------")
 # project = rf.workspace("team-roboflow").project("american-sign-language-poly")
 # dataset = project.version(VERSION).download("coco")
 
 # register_coco_instances("asl_poly_train", {}, f"./dataset/American-Sign-Language-Poly-{VERSION}/train/_annotations.coco.json", f"./dataset/American-Sign-Language-Poly-{VERSION}/train/")
 # register_coco_instances("asl_poly_valid", {}, f"./dataset/American-Sign-Language-Poly-{VERSION}/valid/_annotations.coco.json", f"./dataset/American-Sign-Language-Poly-{VERSION}/valid/")
-register_coco_instances("asl_poly_test", {}, f"./dataset/American-Sign-Language-Poly-{VERSION}/test/_annotations.coco.json", f"./dataset/American-Sign-Language-Poly-{VERSION}/test/")
+# register_coco_instances("asl_poly_test", {}, f"./dataset/American-Sign-Language-Poly-{VERSION}/test/_annotations.coco.json", f"./dataset/American-Sign-Language-Poly-{VERSION}/test/")
+
+register_coco_instances('test',{},
+    _config['eval']['anno'],
+    _config['eval']['img_dir'])
 
 print("Dataset loaded")
 
 #%%
-#test module
-def get_evaluator(cfg, dataset_name, output_folder=None):
-    """
-    Create evaluator(s) for a given dataset.
-    This uses the special metadata "evaluator_type" associated with each builtin dataset.
-    For your own dataset, you can simply create an evaluator manually in your
-    script and do not have to worry about the hacky if-else logic here.
-    """
-    if output_folder is None:
-        output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
-    evaluator_list = []
-    evaluator_type = MetadataCatalog.get(dataset_name).evaluator_type
-    if evaluator_type in ["sem_seg", "coco_panoptic_seg"]:
-        evaluator_list.append(
-            SemSegEvaluator(
-                dataset_name,
-                distributed=True,
-                output_dir=output_folder,
-            )
-        )
-    if evaluator_type in ["coco", "coco_panoptic_seg"]:
-        evaluator_list.append(COCOEvaluator(dataset_name, output_dir=output_folder))
-    if evaluator_type == "coco_panoptic_seg":
-        evaluator_list.append(COCOPanopticEvaluator(dataset_name, output_folder))
-    if evaluator_type == "cityscapes_instance":
-        return CityscapesInstanceEvaluator(dataset_name)
-    if evaluator_type == "cityscapes_sem_seg":
-        return CityscapesSemSegEvaluator(dataset_name)
-    if evaluator_type == "pascal_voc":
-        return PascalVOCDetectionEvaluator(dataset_name)
-    if evaluator_type == "lvis":
-        return LVISEvaluator(dataset_name, cfg, True, output_folder)
-    if len(evaluator_list) == 0:
-        raise NotImplementedError(
-            "no Evaluator for the dataset {} with the type {}".format(dataset_name, evaluator_type)
-        )
-    if len(evaluator_list) == 1:
-        return evaluator_list[0]
-    return DatasetEvaluators(evaluator_list)
-
-logger = logging.getLogger("detectron2")
-
-def do_test(cfg, model):
-    results = OrderedDict()
-    for dataset_name in cfg.DATASETS.TEST:
-        data_loader = build_detection_test_loader(cfg, dataset_name)
-        evaluator = get_evaluator(
-            cfg, dataset_name, os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
-        )
-        results_i = inference_on_dataset(model, data_loader, evaluator)
-        results[dataset_name] = results_i
-        if comm.is_main_process():
-            logger.info("Evaluation results for {} in csv format:".format(dataset_name))
-            print_csv_format(results_i)
-    if len(results) == 1:
-        results = list(results.values())[0]
-    return results
-
-#%%
 cfg = get_cfg()
-# cfg.DATASETS.TEST = ("asl_poly_test",)#Test dataset registered in a previous cell
-cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
-cfg.MODEL.WEIGHTS = os.path.join("./output/", "model_final.pth")  # path to the model we just trained
-cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.2   # set a custom testing threshold
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = 27
-cfg.OUTPUT_DIR = "./output"
+cfg.merge_from_file( _config['eval']['config'] )
+# cfg = get_cfg()
+# # cfg.DATASETS.TEST = ("asl_poly_test",)#Test dataset registered in a previous cell
+# cfg.merge_from_file()
+cfg.MODEL.WEIGHTS = _config['eval']['weight']  # path to the model we just trained
+# cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.2   # set a custom testing threshold
+# cfg.MODEL.ROI_HEADS.NUM_CLASSES = 27
+# cfg.OUTPUT_DIR = "./output"
 predictor = DefaultPredictor(cfg)
 # model = build_model(cfg)
 
-#%%
-# do_test(cfg, model)
-# results = OrderedDict()
-# dataset_name = 'asl_poly_test'
-# data_loader = build_detection_test_loader(cfg, dataset_name)
-# evaluator = get_evaluator(
-#             cfg, dataset_name, os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
-#         )
-# results_i = inference_on_dataset(predictor.model, data_loader, evaluator)
-# results[dataset_name] = results_i
-
-# %%
-evaluator = COCOEvaluator("asl_poly_test", cfg, False, output_dir="./output/")
-val_loader = build_detection_test_loader(cfg, "asl_poly_test")
+evaluator = COCOEvaluator("test", cfg, False, output_dir="./output/")
+val_loader = build_detection_test_loader(cfg, "test")
 
 #Use the created predicted model in the previous step
-inference_on_dataset(predictor.model, val_loader, evaluator)
+result_i = inference_on_dataset(predictor.model, val_loader, evaluator)
 
-# %%
+
+#%%
+print(result_i)

@@ -44,13 +44,22 @@ from detectron2.evaluation import (
     print_csv_format,
 )
 
-# from roboflow import Roboflow
+import yaml
 
-# from matplotlib import pyplot as plt
-# from PIL import Image
+#%%
+with open('./settings.yaml') as f :
+    _config = yaml.load(f, Loader=yaml.FullLoader)
+    print(_config)
+    
+#%%
+cfg = get_cfg()
+cfg.merge_from_file( os.path.join(_config['cfg']['config_dir'], _config['dataset']['name']+ '_config.yaml'))
+
+
+
 # %%
 #load dataset
-VERSION = 2
+# VERSION = 2
 # rf = Roboflow(api_key="-------")
 # project = rf.workspace("team-roboflow").project("american-sign-language-poly")
 # dataset = project.version(VERSION).download("coco")
@@ -59,44 +68,14 @@ VERSION = 2
 # register_coco_instances("asl_poly_valid", {}, f"./dataset/American-Sign-Language-Poly-{VERSION}/valid/_annotations.coco.json", f"./dataset/American-Sign-Language-Poly-{VERSION}/valid/")
 # register_coco_instances("asl_poly_test", {}, f"./dataset/American-Sign-Language-Poly-{VERSION}/test/_annotations.coco.json", f"./dataset/American-Sign-Language-Poly-{VERSION}/test/")
 
-register_coco_instances("train", {}, 
-                        "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/train.json", 
-                        "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/train/")
-register_coco_instances("test", {},
-                        "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/test.json",
-                        "/home/ubiqos-ai2/work/visionApp/datasets/Microcontroller Segmentation/test/")
-
+register_coco_instances('train', {}, 
+    _config['cfg']['train_set']['anno'], 
+    _config['cfg']['train_set']['img_dir'])
+register_coco_instances('test',{},
+    _config['cfg']['test_set']['anno'],
+    _config['cfg']['test_set']['img_dir'])
 
 print("Dataset loaded")
-
-#%%
-ds_test = DatasetCatalog.get(f"test")
-_meta = MetadataCatalog.get(f"test") # 메타데이터 추출 
-print(_meta.thing_classes)
-print(f'class num : {len(_meta.thing_classes)}')
-NUM_CLASSES = len(_meta.thing_classes)
-
-
-#%%
-cfg = get_cfg()
-cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
-cfg.DATASETS.TRAIN = ("train",)#Train dataset registered in a previous cell
-cfg.DATASETS.TEST = ("test",)#Test dataset registered in a previous cell
-cfg.DATALOADER.NUM_WORKERS = 2
-cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")  # Let training initialize from model zoo
-cfg.SOLVER.IMS_PER_BATCH = 2
-cfg.SOLVER.BASE_LR = 0.00025
-cfg.SOLVER.MAX_ITER = 1000 #We found that with a patience of 500, training will early stop before 10,000 iterations
-cfg.SOLVER.STEPS = []
-cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = NUM_CLASSES 
-cfg.TEST.EVAL_PERIOD = 0 # Increase this number if you want to monitor validation performance during training
-
-PATIENCE = 500 #Early stopping will occur after N iterations of no imporovement in total_loss
-
-
-os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-
 
 #%%
 #test module
@@ -181,6 +160,7 @@ writers = default_writers(cfg.OUTPUT_DIR, max_iter) if comm.is_main_process() el
 #%%
 # # compared to "train_net.py", we do not support accurate timing and
 # precise BN here, because they are not trivial to implement in a small training loop
+PATIENCE = 500
 data_loader = build_detection_train_loader(cfg)
 logger.info("Starting training from iteration {}".format(start_iter))
 patience_counter = 0
