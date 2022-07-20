@@ -26,7 +26,7 @@ python coco_spliter.py --img-path=../../../../datasets/mushroom_data/yangsongyi/
 
 
 #validation dataset 을 skip
-python coco_spliter.py --img-path=/home/ubiqos-ai2/work/datasets/bitles/images --json-path=/home/ubiqos-ai2/work/visionApp/datasets/dic_1009/anno.json --output-path=/home/ubiqos-ai2/work/visionApp/datasets/dic_1009/  --train-ratio=0.8
+python coco_spliter.py --img-path=/home/ubiqos-ai2/work/visionApp/datasets/cauda/images --json-path=/home/ubiqos-ai2/work/visionApp/datasets/cauda/all.json --output-path=/home/ubiqos-ai2/work/visionApp/datasets/cauda/  --train-ratio=0.8
 
 
 
