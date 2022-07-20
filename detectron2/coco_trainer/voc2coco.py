@@ -1,24 +1,13 @@
 #%%
 import os
-from posixpath import dirname
 import numpy as np
 import xml.etree.ElementTree as ET
-import torch
 import cv2
-import time
 import datetime
 import yaml
-import uuid
 import json
 
-
-# from detectron2.structures import BoxMode
-# from detectron2.data import MetadataCatalog,DatasetCatalog
-# from detectron2.utils import comm
-# from detectron2.utils.file_io import PathManager
-
 obj_id_generator = 0
-# img_id_generator = 1
 
 def generateId():
     global obj_id_generator
@@ -26,10 +15,6 @@ def generateId():
     obj_id_generator += 1
     
     return obj_id_generator
-    
-    
-
-
 
 def _parseXml(annotation_path,image_path,filename,classes) :
 
@@ -132,7 +117,6 @@ def _parseXml(annotation_path,image_path,filename,classes) :
         'annotations': anno_objs,
         'meta': metaObj
     }
-#%%
 def loadVocDataset(annotation_path,image_path,classes,superset=None) :
 
     #annotation_path =  os.path.join(dataset_path,dataset_name,'voc')
@@ -160,6 +144,7 @@ def loadVocDataset(annotation_path,image_path,classes,superset=None) :
             dataset_dicts["meta"].append(vocData["meta"])
     return dataset_dicts
 #%%
+print('voc to coco converter v0.9')
 dataset_path= "/home/ubiqos-ai2/work/datasets/bitles"
 # dataset_name='dic_1009'
 save_name='./temp/anno.json'
@@ -183,12 +168,9 @@ if img_path is None :
     img_path = os.path.join(dataset_path,'voc')
 
 #%% load config data
-# print(f'load config data from {dataset_path}')
 config_data = {}
 label_dic = {}
 dataset_config_file = os.path.join(dataset_path,'dataset_info.yaml')
-
-# print(dataset_config_file)
 
 try:
     with open(dataset_config_file, 'r') as f:
