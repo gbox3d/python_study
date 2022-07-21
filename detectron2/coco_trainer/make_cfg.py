@@ -93,7 +93,7 @@ cfg.OUTPUT_DIR = output_dir
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = NUM_CLASSES
 
 cfg.TEST.AUG.ENABLED = True
-cfg.TEST.EVAL_PERIOD = 0
+cfg.TEST.EVAL_PERIOD = _config['cfg']['eval_period']    
 
 
 # 설정 파일 덤프 하고 astrophysics.yaml 로 저장 
