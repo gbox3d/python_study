@@ -53,7 +53,7 @@ save_name: '../../../annos/all.json'
 
 예>
 ```bash
-python coco_mergy.py -c ./temp/mergy_cmd.yaml
+python coco_mergy.py -c ./settings/mergy_cmd.yaml
 ```
 
 ## settings 
