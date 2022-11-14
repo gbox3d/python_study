@@ -101,6 +101,11 @@ for path, img, im0s, vid_cap in dataset:
                 num_kpts = len(kpts) // steps
                 print(num_kpts)
                 
+                left_wrist = ( int(kpts[steps* 9]), int(kpts[steps* 9 + 1]) )
+                right_wrist = ( int(kpts[steps* 10]), int(kpts[steps* 10 + 1]) )
+            
+                print(left_wrist, right_wrist)
+                
                 for kid in range(num_kpts):
                     # r, g, b = pose_kpt_color[kid]
                     x_coord, y_coord = kpts[steps * kid], kpts[steps * kid + 1]

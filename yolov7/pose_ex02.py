@@ -65,6 +65,8 @@ for path, img, im0s, vid_cap in dataset:
     img /= 255.0  # 0 - 255 to 0.0 - 1.0
     if img.ndimension() == 3:
         img = img.unsqueeze(0)
+        
+    print(img.shape)
 
     # Inference
     # t1 = time_synchronized()
