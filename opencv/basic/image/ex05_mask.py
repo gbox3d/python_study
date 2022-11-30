@@ -1,4 +1,6 @@
 #%% region of images
+# https://bkshin.tistory.com/entry/OpenCV-9-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%B0%EC%82%B0
+
 import numpy as np
 import cv2 as cv
 
