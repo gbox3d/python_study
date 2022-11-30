@@ -12,3 +12,5 @@ res/
 
 yolov5/runs
 yolov5/*.pt
+
+output/*
