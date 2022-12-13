@@ -61,6 +61,7 @@ retina_masks=False
 
 # %%
 # Load model
+
 device = select_device('') # CUDA:0,1,2,3 or CPU
 model = DetectMultiBackend('yolov5s-seg.pt', device=device, dnn=dnn, fp16=half)
 stride, names, pt = model.stride, model.names, model.pt
@@ -93,10 +94,9 @@ pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, m
 
 # print(pred)
 
-# %%
+#%%
 for i, det in enumerate(pred):  # per image
     # print(i,det)
-    
     masks = process_mask(proto[i], det[:, 6:], det[:, :4], im.shape[2:], upsample=True)  # HWC
     det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()  # rescale boxes to im0 size
     
@@ -104,20 +104,40 @@ for i, det in enumerate(pred):  # per image
         scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=True)
         for x in reversed(masks2segments(masks))
         ]
-    
-    #draw mask
-    
     # mask = masks[i]
-    
     for j, (*xyxy, conf, cls) in enumerate(reversed(det[:, :6])):
         # print(cls,conf)
-        
         seg = segments[j].reshape(-1)  # (n,2) to (n*2)
         print(seg.shape)
         line = (cls, *seg, conf)
         
-# %%
+#%% draw mask
+for i in range(len(masks)):
+    mask = masks[i]
+    print(mask.shape)
+    display(Image.fromarray(np.asarray((mask)*255,dtype=np.uint8)))
 
-display(Image.fromarray(np.asarray((masks[1])*255,dtype=np.uint8)))
+#%%
+# for i in range(len(masks)):
+print(len(seg))
+#%%
+out_img = im0.copy()
+for i in range(len(masks)):
+
+    seg = segments[i].reshape(-1)  # (n,2) to (n*2)
+
+    _seg = seg.copy()
+
+    for i in range( int(len(_seg) /2) ):
+        _seg[i*2] = _seg[i*2] * im0.shape[1]
+        _seg[i*2+1] = _seg[i*2+1] * im0.shape[0]
+        
+    
+    np_cnt = np.asarray(_seg,dtype=np.int32).reshape(-1,1,2)
+    out_img = cv2.polylines(out_img, [np_cnt], True, (0,255,0), 2)
+    out_img = cv2.cvtColor(out_img,cv2.COLOR_BGR2RGB)
+
+
+display(Image.fromarray(out_img))
 
 # %%
