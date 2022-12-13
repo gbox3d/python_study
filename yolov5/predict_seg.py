@@ -61,7 +61,7 @@ retina_masks=False
 
 # %%
 # Load model
-device = select_device('CUDA:0')
+device = select_device('') # CUDA:0,1,2,3 or CPU
 model = DetectMultiBackend('yolov5s-seg.pt', device=device, dnn=dnn, fp16=half)
 stride, names, pt = model.stride, model.names, model.pt
 
@@ -105,10 +105,19 @@ for i, det in enumerate(pred):  # per image
         for x in reversed(masks2segments(masks))
         ]
     
+    #draw mask
+    
+    # mask = masks[i]
     
     for j, (*xyxy, conf, cls) in enumerate(reversed(det[:, :6])):
         # print(cls,conf)
+        
         seg = segments[j].reshape(-1)  # (n,2) to (n*2)
+        print(seg.shape)
         line = (cls, *seg, conf)
-        print(line)
+        
+# %%
+
+display(Image.fromarray(np.asarray((masks[1])*255,dtype=np.uint8)))
+
 # %%
