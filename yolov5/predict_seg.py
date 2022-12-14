@@ -28,7 +28,9 @@ import PIL.ImageColor as ImageColor
 import PIL.Image as Image
 
 #%%
-img = cv2.imread('./bus.jpg')  # BGR
+img = cv2.imread('./test1.jpg')  # BGR
+# img = cv2.imread('./2022_12_12_14_42_57_dev_9610763.jpg')  # BGR
+# img = cv2.imread('./bus.jpg')  # BGR
 np_img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 display(Image.fromarray(np_img))
 
@@ -63,7 +65,8 @@ retina_masks=False
 # Load model
 
 device = select_device('') # CUDA:0,1,2,3 or CPU
-model = DetectMultiBackend('yolov5s-seg.pt', device=device, dnn=dnn, fp16=half)
+# model = DetectMultiBackend('yolov5s-seg.pt', device=device, dnn=dnn, fp16=half)
+model = DetectMultiBackend('hhgun_s.pt', device=device, dnn=dnn, fp16=half)
 stride, names, pt = model.stride, model.names, model.pt
 
 imgsz = check_img_size(imgsz, s=stride)  # check image size
@@ -95,27 +98,32 @@ pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, m
 # print(pred)
 
 #%%
+masks = None
 for i, det in enumerate(pred):  # per image
     # print(i,det)
-    masks = process_mask(proto[i], det[:, 6:], det[:, :4], im.shape[2:], upsample=True)  # HWC
-    det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()  # rescale boxes to im0 size
-    
-    segments = [
-        scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=True)
-        for x in reversed(masks2segments(masks))
-        ]
-    # mask = masks[i]
-    for j, (*xyxy, conf, cls) in enumerate(reversed(det[:, :6])):
-        # print(cls,conf)
-        seg = segments[j].reshape(-1)  # (n,2) to (n*2)
-        print(seg.shape)
-        line = (cls, *seg, conf)
+    if(len(det) > 0):
+        masks = process_mask(proto[i], det[:, 6:], det[:, :4], im.shape[2:], upsample=True)  # HWC
+        det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()  # rescale boxes to im0 size
+        
+        segments = [
+            scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=True)
+            for x in reversed(masks2segments(masks))
+            ]
+        # mask = masks[i]
+        for j, (*xyxy, conf, cls) in enumerate(reversed(det[:, :6])):
+            # print(cls,conf)
+            seg = segments[j].reshape(-1)  # (n,2) to (n*2)
+            print(seg.shape)
+            line = (cls, *seg, conf)
         
 #%% draw mask
-for i in range(len(masks)):
-    mask = masks[i]
-    print(mask.shape)
-    display(Image.fromarray(np.asarray((mask)*255,dtype=np.uint8)))
+if masks is not None:
+    for i in range(len(masks)):
+        mask = masks[i]
+        print(mask.shape)
+        display(Image.fromarray(np.asarray((mask)*255,dtype=np.uint8)))
+else :
+    print("no mask")
 
 #%%
 # for i in range(len(masks)):

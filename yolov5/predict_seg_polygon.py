@@ -13,14 +13,18 @@ import PIL.ImageColor as ImageColor
 import PIL.Image as Image
 
 #%%
-img = cv2.imread('./test1.jpg')  # BGR
+img = cv2.imread('./test3.jpg')  # BGR
 np_img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 # display(Image.fromarray(np_img))
 #%%
 
-_model = Yolov5SegModel(weights='yolov5s-seg.pt', imgsz=(640, 640),device='' ,bs=1,dnn=False,half=False)
+_model = Yolov5SegModel(weights='hhgun_s.pt', imgsz=(640, 640),device='' ,bs=1,dnn=False,half=False)
 
 _,_,masks,segments,box_infos = _model.predict(img)
+
+if masks is None:
+    print('no object found')
+    exit()
 
 #%%
 for box_info in box_infos:
@@ -45,6 +49,49 @@ for i in range(len(masks)):
     np_cnt = np.asarray(_seg,dtype=np.int32).reshape(-1,1,2)
     out_img = cv2.polylines(out_img, [np_cnt], True, (0,255,0), 2)
     out_img = cv2.cvtColor(out_img,cv2.COLOR_BGR2RGB)
-
+    
+    rect = cv2.minAreaRect(np_cnt)
+    box = cv2.boxPoints(rect)
+    cv2.drawContours(out_img, [np.int0(box)], 0, (255,0,0), 2)
+    
+    print('box :', box)
+    
+    _rear = [int( (box[0][0] + box[1][0]) /2 ), int( (box[0][1] + box[1][1]) /2 )]
+    _front = [int( (box[2][0] + box[3][0]) /2 ), int( (box[2][1] + box[3][1]) /2 )]
+    
+    # cv2.circle(out_img, tuple(_rear), 5, (0,255,0), -1)
+    # cv2.circle(out_img, tuple(_front), 5, (0,255,0), -1)
+    
+    _dist = np.linalg.norm(np.array(_rear) - np.array(_front))
+    
+    _rear2 = [int( (box[0][0] + box[3][0]) /2 ), int( (box[0][1] + box[3][1]) /2 )]
+    _front2 = [int( (box[1][0] + box[2][0]) /2 ), int( (box[1][1] + box[2][1]) /2 )]
+    
+    # cv2.circle(out_img, tuple(_rear2), 5, (255,0,0), -1)
+    # cv2.circle(out_img, tuple(_front2), 5, (255,0,0), -1)
+    
+    _dist2 = np.linalg.norm(np.array(_rear2) - np.array(_front2))
+    
+    print('dist :', _dist, _dist2)
+    
+    if(_dist > _dist2): 
+        if _rear[1] > _front[1] :
+            _temp = _rear
+            _rear = _front
+            _front = _temp
+            
+        result = [_rear,_front,_dist]
+    else:
+        if _rear2[1] > _front2[1] :
+            _temp = _rear2
+            _rear2 = _front2
+            _front2 = _temp
+        result = [_rear2,_front2,_dist2]
+        
+    cv2.circle(out_img, tuple(result[0]), 5, (0,255,0), -1) # rear
+    cv2.circle(out_img, tuple(result[1]), 5, (255,255,0), -1) # front
+    
 
 display(Image.fromarray(out_img))
+
+# %%

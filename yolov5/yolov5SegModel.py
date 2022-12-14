@@ -43,15 +43,20 @@ class Yolov5SegModel():
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det, nm=32)
         
         im0 = img.copy()
+        
+        masks = None
+        segments = None
+        
         for i, det in enumerate(pred):  # per image
         # print(i,det)
-            masks = process_mask(proto[i], det[:, 6:], det[:, :4], im.shape[2:], upsample=True)  # HWC
-            det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()  # rescale boxes to im0 size
-        
-            segments = [
-                scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=True)
-                for x in reversed(masks2segments(masks))
-                ]
+            if len(det) > 0:
+                masks = process_mask(proto[i], det[:, 6:], det[:, :4], im.shape[2:], upsample=True)  # HWC
+                det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()  # rescale boxes to im0 size
+            
+                segments = [
+                    scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=True)
+                    for x in reversed(masks2segments(masks))
+                    ]
         
         return pred, proto, masks, segments, [ (*xyxy,conf,cls) for i, (*xyxy, conf, cls) in enumerate(reversed(det[:, :6])) ]
         
