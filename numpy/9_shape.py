@@ -41,3 +41,18 @@ print(type(px))
 print(type(_ary7))
 print(type(_temp[:,0]))
 # %%
+
+#%% 인덱스 정렬 n,5 차원 데이터 정렬
+x = np.array([91,145,142,175,59,1,2,3,4,5 ])
+
+#%%
+_x = x.reshape(-1,5)
+
+# %%
+__x = _x[:,0]
+# %%
+sortidx =  __x.argsort()
+# %%
+__sort_x = [ _x[i] for i in sortidx]
+print(__sort_x)
+# %%
