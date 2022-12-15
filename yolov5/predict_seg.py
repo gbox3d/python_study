@@ -28,7 +28,7 @@ import PIL.ImageColor as ImageColor
 import PIL.Image as Image
 
 #%%
-img = cv2.imread('./test1.jpg')  # BGR
+img = cv2.imread('./test3.jpg')  # BGR
 # img = cv2.imread('./2022_12_12_14_42_57_dev_9610763.jpg')  # BGR
 # img = cv2.imread('./bus.jpg')  # BGR
 np_img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
