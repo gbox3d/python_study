@@ -28,9 +28,9 @@ import PIL.ImageColor as ImageColor
 import PIL.Image as Image
 
 #%%
-img = cv2.imread('./test3.jpg')  # BGR
+# img = cv2.imread('./test3.jpg')  # BGR
 # img = cv2.imread('./2022_12_12_14_42_57_dev_9610763.jpg')  # BGR
-# img = cv2.imread('./bus.jpg')  # BGR
+img = cv2.imread('./bus.jpg')  # BGR
 np_img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 display(Image.fromarray(np_img))
 
@@ -65,8 +65,8 @@ retina_masks=False
 # Load model
 
 device = select_device('') # CUDA:0,1,2,3 or CPU
-# model = DetectMultiBackend('yolov5s-seg.pt', device=device, dnn=dnn, fp16=half)
-model = DetectMultiBackend('hhgun_s.pt', device=device, dnn=dnn, fp16=half)
+model = DetectMultiBackend('yolov5s-seg.pt', device=device, dnn=dnn, fp16=half)
+# model = DetectMultiBackend('hhgun_s.pt', device=device, dnn=dnn, fp16=half)
 stride, names, pt = model.stride, model.names, model.pt
 
 imgsz = check_img_size(imgsz, s=stride)  # check image size

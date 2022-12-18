@@ -12,13 +12,12 @@ import PIL.ImageDraw as ImageDraw
 import PIL.ImageColor as ImageColor
 import PIL.Image as Image
 
-#%%
-img = cv2.imread('./test3.jpg')  # BGR
+img = cv2.imread('bus.jpg')  # BGR
 np_img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 # display(Image.fromarray(np_img))
 #%%
 
-_model = Yolov5SegModel(weights='hhgun_s.pt', imgsz=(640, 640),device='' ,bs=1,dnn=False,half=False)
+_model = Yolov5SegModel(weights='yolov5m-seg.pt', imgsz=(640, 640),device='' ,bs=1,dnn=False,half=False)
 
 _,_,masks,segments,box_infos = _model.predict(img)
 
@@ -31,6 +30,27 @@ for box_info in box_infos:
     print('box :', box_info[0].item(), box_info[1].item(), box_info[2].item(), box_info[3].item())
     print('conf :', box_info[4].item())
     print('class :', _model.names[ int(box_info[5].item())] )
+    
+#%%
+im0 = np_img.copy()
+out_img = im0.copy()
+if masks is not None:
+                
+    for i in range(len(masks)):
+        mask = masks[i]
+        _seg = segments[i]
+        
+        # seg_poly = Polygon(_seg)
+        # print('seg_poly' , seg_poly.area)
+        
+        np_mask_img = np.asarray((mask)*255,dtype=np.uint8)
+        out_img = cv2.bitwise_and(out_img,out_img,mask=np_mask_img)
+        
+display(Image.fromarray(np_mask_img))
+        
+        
+
+
 
 #%%
 im0 = img.copy()
