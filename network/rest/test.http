@@ -5,4 +5,10 @@ GET http://localhost:10048/hello?name=gbox&msg=hi
 GET http://localhost:10048/exit
 
 ###
-GET http://localhost:8282/hello
+GET http://localhost:8282/hello?name=gbox
+
+###
+GET http://localhost:8282/exit
+
+###
+GET http://localhost:8080/hana1.jpg

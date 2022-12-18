@@ -2,14 +2,11 @@
 import socket
 import json
 import time
-
 # from http_parser.http import HttpStream
 # from http_parser.reader import SocketReader
-
-
 from urllib.parse import urlparse, parse_qs
-
-import argparse
+import yaml
+# import argparse
 
 #https://stackoverflow.com/questions/4685217/parse-raw-http-headers
 from http.server import BaseHTTPRequestHandler
@@ -26,18 +23,24 @@ class HTTPRequest(BaseHTTPRequestHandler):
         self.error_code = code
         self.error_message = message
 
-parser = argparse.ArgumentParser(description="argument parser sample")
-
-parser.add_argument('--port', type=int,
-                    default=100,
-                    help='help : it is test server')
-_args = parser.parse_args()
-
-port = 8282
-if _args.port:
-    port = _args.port
+#%%
+with open( 'config.yaml' , 'r') as f:
+    config_data = yaml.load(f,Loader=yaml.FullLoader)
+    port = config_data['port']
 
 
+# parser = argparse.ArgumentParser(description="argument parser sample")
+# parser.add_argument('--port', type=int,
+#                     default=100,
+#                     help='help : it is test server')
+# _args = parser.parse_args()
+
+# #%%
+# port = 8282
+# if _args.port:
+#     port = _args.port
+
+#%%
 print(f'server bind {port}')
 
 try:
@@ -72,21 +75,48 @@ try:
         print(query)
         
 
+        body_str = ""
         if url.path == '/exit' :
             _loop = False
+            body_str = json.dumps({"r": "ok", "code": 0, "msg": "bye~"})
+            _str = 'HTTP/1.1 200 OK\r\n'
+            _str += 'Content-Type: Application/json\r\n'
+            #cors 관련 처리 
+            _str += 'Access-Control-Allow-Origin: *\r\n'
+            _str += 'Access-Control-Allow-Methods: GET\r\n'
+            _str += 'Access-Control-Max-Age: 1000\r\n\r\n'
+            _str += body_str
         elif url.path == '/hello':
-            print(f"name : {query['name'][0]}")
+            _name = query['name'][0]
+            # print(f"name : {query['name'][0]}")
+            body_str = json.dumps({"r": "ok", "code": 0, "msg": f"hello {_name}"})
+            _str = 'HTTP/1.1 200 OK\r\n'
+            _str += 'Content-Type: Application/json\r\n'
+            #cors 관련 처리 
+            _str += 'Access-Control-Allow-Origin: *\r\n'
+            _str += 'Access-Control-Allow-Methods: GET\r\n'
+            _str += 'Access-Control-Max-Age: 1000\r\n\r\n'
+            _str += body_str
+        elif url.path == '/getimg':
+            with open('hana1.jpg', 'rb') as f:
+                _str = 'HTTP/1.1 200 OK\r\n'
+                _str += 'Content-Type: image/jpg\r\n'
+                #cors 관련 처리 
+                _str += 'Access-Control-Allow-Origin: *\r\n'
+                _str += 'Access-Control-Allow-Methods: GET\r\n'
+                _str += 'Access-Control-Max-Age: 1000\r\n\r\n'
+                body_str = f.read()
+                _str += body_str
+                
         else :
-            pass
-
-
-        _str = 'HTTP/1.1 200 OK\r\n'
-        _str += 'Content-Type: Application/json\r\n'
-        #cors 관련 처리 
-        _str += 'Access-Control-Allow-Origin: *\r\n'
-        _str += 'Access-Control-Allow-Methods: GET\r\n'
-        _str += 'Access-Control-Max-Age: 1000\r\n\r\n'
-        _str += json.dumps({"r": "ok", "code": 0, "msg": "welcome"})
+            body_str = json.dumps({"r": "ok", "code": 0, "msg": "tiny http server"})
+            _str = 'HTTP/1.1 200 OK\r\n'
+            _str += 'Content-Type: Application/json\r\n'
+            #cors 관련 처리 
+            _str += 'Access-Control-Allow-Origin: *\r\n'
+            _str += 'Access-Control-Allow-Methods: GET\r\n'
+            _str += 'Access-Control-Max-Age: 1000\r\n\r\n'
+            _str += body_str
 
         client_socket.sendall(_str.encode())
         client_socket.close()
@@ -95,7 +125,7 @@ except KeyboardInterrupt as ki:
     # server_socket.close()
     print('exit by keybord')
 except Exception as ex:
-    print(ex)
+    print('Exception' , ex)
 
 time.sleep(1)
 server_socket.close()
