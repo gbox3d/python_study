@@ -65,8 +65,9 @@ try:
     server = HTTPServer(('', PORT_NUMBER), myHandler)
     print('Started httpserver on port ' , PORT_NUMBER)
  
-	#Wait forever for incoming htto requests
+	#Wait forever for incoming htto requests , blocking fucntion
     server.serve_forever()
+    
 except KeyboardInterrupt:
     print( '^C received, shutting down the web server')
     server.socket.close()

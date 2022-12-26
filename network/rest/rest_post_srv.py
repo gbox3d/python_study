@@ -2,6 +2,7 @@
 import socket
 import json
 import time
+import base64
 
 from urllib.parse import urlparse, parse_qs
 
@@ -28,7 +29,7 @@ class HTTPRequest(BaseHTTPRequestHandler):
         self.error_code = code
         self.error_message = message
 
-port = 8282
+port = 8080
 print(f'server bind {port}')
 
 try:
@@ -77,15 +78,30 @@ try:
             #     print(f"name : {query['name'][0]}")
             # else :
             #     pass
-
-
-            _str = 'HTTP/1.1 200 OK\r\n'
-            _str += 'Content-Type: Application/json\r\n'
-            #cors 관련 처리 
-            _str += 'Access-Control-Allow-Origin: *\r\n'
-            _str += 'Access-Control-Allow-Methods: GET\r\n'
-            _str += 'Access-Control-Max-Age: 1000\r\n\r\n'
-            _str += json.dumps({"r": "ok", "code": 0, "msg": "welcome"})
+            
+            if url.path == '/img' :
+                _str = 'HTTP/1.1 200 OK\r\n'
+                _str += 'Content-Type: image/jpeg\r\n'
+                #cors 관련 처리 
+                _str += 'Access-Control-Allow-Origin: *\r\n'
+                _str += 'Access-Control-Allow-Methods: GET\r\n'
+                _str += 'Access-Control-Max-Age: 1000\r\n\r\n'
+                
+                
+                with open('hana1.jpg', 'rb') as f:
+                    # conver to base64
+                    _str += base64.b64encode(f.read()).decode()
+                
+                
+                
+            else :
+                _str = 'HTTP/1.1 200 OK\r\n'
+                _str += 'Content-Type: Application/json\r\n'
+                #cors 관련 처리 
+                _str += 'Access-Control-Allow-Origin: *\r\n'
+                _str += 'Access-Control-Allow-Methods: GET\r\n'
+                _str += 'Access-Control-Max-Age: 1000\r\n\r\n'
+                _str += json.dumps({"r": "ok", "code": 0, "msg": "welcome"})
 
         elif _method == 'POST' :
             if url.path == '/upload':
