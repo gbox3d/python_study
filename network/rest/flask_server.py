@@ -14,8 +14,8 @@ print(sys.version)
 # print(sys.argv[0])
 
 #%%
-_port=8086
-_host = "localhost"
+_port=8080
+_host = "0.0.0.0"
 #쥬피터 환경일경우
 if Path(sys.argv[0]).name == 'ipykernel_launcher.py' :
     print('can not run in ipykernel_launcher')
