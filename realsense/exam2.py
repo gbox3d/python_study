@@ -66,6 +66,10 @@ else:
     images = np.hstack((color_image, depth_colormap))
 
 #%%
+print(depth_image.shape)
+print(depth_image[100,100] , depth_frame.get_distance(100,100) )
+
+#%%
 display( Image.fromarray( cv2.cvtColor(color_image,cv2.COLOR_BGR2RGB) ) )
 # %%
 display( Image.fromarray( cv2.cvtColor(depth_colormap,cv2.COLOR_BGR2RGB) ) )

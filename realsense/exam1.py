@@ -23,3 +23,5 @@ depth = frames.get_depth_frame()
 dist = depth.get_distance(100, 100)
 
 print(dist)
+
+# %%
