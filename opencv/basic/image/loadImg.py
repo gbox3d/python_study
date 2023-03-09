@@ -13,13 +13,6 @@ from IPython.display import display
 img = cv.imread('../../akb48.jpg')
 
 display(Image.fromarray(cv.cvtColor(img,cv.COLOR_BGR2RGB)))
-# if (type(img) is np.ndarray) == False : 
-#     print('img file error')
-#     sys.exit()
-# cv.imshow('imgView',img)
-# while True : 
-#     if cv.waitKey(20) & 0xff == 27 : break
-# cv.destroyAllWindows()
 
 #%% 디코더 사용 
 with open('../../akb48.jpg',"rb") as fd:
