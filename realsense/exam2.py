@@ -39,11 +39,17 @@ if not found_rgb:
     print("The demo requires Depth camera with Color sensor")
     exit(0)
 
-config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
+
+print("device_product_line: ", device_product_line)
 if device_product_line == 'L500':
+    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
     config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
+elif device_product_line == 'D400':
+    config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 30)
+    config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
 else:
+    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
     config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
 print("device_product_line: ", device_product_line)
@@ -111,6 +117,7 @@ print(depth_image[100,100] , depth_frame.get_distance(100,100) )
 #%%
 display( Image.fromarray( cv2.cvtColor(color_image,cv2.COLOR_BGR2RGB) ) )
 # %%
+print(depth_colormap.shape)
 display( Image.fromarray( cv2.cvtColor(depth_colormap,cv2.COLOR_BGR2RGB) ) )
 # %%
 
