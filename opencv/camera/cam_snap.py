@@ -16,9 +16,25 @@ from IPython.display import display
 print(cv.__version__)
 
 #%%
+def get_available_camera_indices(max_cameras=10):
+    available_indices = []
+    for index in range(max_cameras):
+        cap = cv.VideoCapture(index)
+        if cap is None or not cap.isOpened():
+            cap.release()
+        else:
+            available_indices.append(index)
+            cap.release()
+    return available_indices
+
+available_cameras = get_available_camera_indices()
+print("Available camera indices:", available_cameras)
+
+
+#%%
 #파이캠은 -1 , 웹캠은 0
 # cap = cv.VideoCapture(-1)
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(2)
 
 if cap.isOpened():
     # print(cap)
