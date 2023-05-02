@@ -34,7 +34,7 @@ print("Available camera indices:", available_cameras)
 #%%
 #파이캠은 -1 , 웹캠은 0
 # cap = cv.VideoCapture(-1)
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(0)
 
 if cap.isOpened():
     # print(cap)
