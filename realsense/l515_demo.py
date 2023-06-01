@@ -44,9 +44,7 @@ if not found_rgb:
 print("device_product_line: ", device_product_line)
 if device_product_line == 'L500':
     config.enable_stream(rs.stream.depth, 1024, 768, rs.format.z16, 30)
-    # config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
     config.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8, 30)
-    
 elif device_product_line == 'D400':
     config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 30)
     config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
@@ -90,57 +88,39 @@ print("Depth to Color Extrinsics: ", depth_to_color_extrinsics)
 print("Extrinsics: ", extrinsics)
 
 
-#%%
-frames = pipeline.wait_for_frames() # Wait for a coherent pair of frames: depth and color
-depth_frame = frames.get_depth_frame() # Get depth frame
-color_frame = frames.get_color_frame() # Get color frame
+try:
+    while True:
 
-# Convert images to numpy arrays
-depth_image = np.asanyarray(depth_frame.get_data())
-color_image = np.asanyarray(color_frame.get_data())
+        # Wait for a coherent pair of frames: depth and color
+        frames = pipeline.wait_for_frames() # Wait for a coherent pair of frames: depth and color
+        depth_frame = frames.get_depth_frame() # Get depth frame
+        color_frame = frames.get_color_frame() # Get color frame
 
-# Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+        # Convert images to numpy arrays
+        depth_image = np.asanyarray(depth_frame.get_data())
+        color_image = np.asanyarray(color_frame.get_data())
 
-depth_colormap_dim = depth_colormap.shape
-color_colormap_dim = color_image.shape
+        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
+        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
 
-# If depth and color resolutions are different, resize color image to match depth image for display
-if depth_colormap_dim != color_colormap_dim:
-    resized_color_image = cv2.resize(color_image, dsize=(depth_colormap_dim[1], depth_colormap_dim[0]), interpolation=cv2.INTER_AREA)
-    images = np.hstack((resized_color_image, depth_colormap))
-else:
-    images = np.hstack((color_image, depth_colormap))
+        depth_colormap_dim = depth_colormap.shape
+        color_colormap_dim = color_image.shape
 
-#%%
-print(depth_image.shape)
-print(depth_image[100,100] , depth_frame.get_distance(100,100) )
+        # If depth and color resolutions are different, resize color image to match depth image for display
+        if depth_colormap_dim != color_colormap_dim:
+            resized_color_image = cv2.resize(color_image, dsize=(depth_colormap_dim[1], depth_colormap_dim[0]), interpolation=cv2.INTER_AREA)
+            images = np.hstack((resized_color_image, depth_colormap))
+        else:
+            images = np.hstack((color_image, depth_colormap))
+       
 
-#%%
-display( Image.fromarray( cv2.cvtColor(color_image,cv2.COLOR_BGR2RGB) ) )
-# %%
-print(depth_colormap.shape)
-display( Image.fromarray( cv2.cvtColor(depth_colormap,cv2.COLOR_BGR2RGB) ) )
-# %%
+        # Show images
+        cv2.imshow('RealSense', images)
+        
+        if cv2.waitKey(1) & 0xFF == 27:  # ASCII value for ESC key is 27
+            break
 
-display( Image.fromarray( cv2.cvtColor(images,cv2.COLOR_BGR2RGB) ) )
-# %%
+finally:
 
-#3d point cloud
-# 특정 픽셀의 3D 좌표 구하기
-x = 320   # 예시: 가운데 픽셀의 x 좌표
-y = 240   # 예시: 가운데 픽셀의 y 좌표
-depth = pipeline.wait_for_frames().get_depth_frame().get_distance(x, y)
-
-# 2D 이미지 좌표를 3D 좌표계로 변환
-point_2d = np.array([x, y])
-point_3d = rs.rs2_deproject_pixel_to_point(intrinsics, point_2d, depth)
-
-print("Pixel ({}, {}) maps to point {}".format(x, y, point_3d))
-
-
-
-#%%
-# Stop streaming
-pipeline.stop()
-
+    # Stop streaming
+    pipeline.stop()

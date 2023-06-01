@@ -19,6 +19,10 @@ for dev in devices:
 
 camera_model = devices[0].get_info(rs.camera_info.name)
 
+camera_name = camera_model.split(' ')[-1]
+
+print("camera_model: ", camera_name)
+
 #%%
 # Configure depth and color streams
 pipeline = rs.pipeline()
@@ -29,7 +33,9 @@ pipeline_wrapper = rs.pipeline_wrapper(pipeline)
 pipeline_profile = config.resolve(pipeline_wrapper)
 device = pipeline_profile.get_device()
 device_product_line = str(device.get_info(rs.camera_info.product_line))
+print("device_product_line: ", device_product_line)
 
+#%%
 found_rgb = False
 for s in device.sensors:
     if s.get_info(rs.camera_info.name) == 'RGB Camera':
@@ -42,7 +48,11 @@ if not found_rgb:
 config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
 if device_product_line == 'L500':
-    config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
+    if camera_name == 'L515':
+        print("L515 depth sensor is set to 1024x768 resolution")
+        config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
+    else:
+        config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
 else:
     config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
