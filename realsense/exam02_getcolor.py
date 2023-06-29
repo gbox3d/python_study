@@ -6,6 +6,9 @@ import cv2
 from PIL import Image
 from IPython.display import display
 
+print(f'cv version: {cv2.__version__}')
+print(f'realsense version: {rs.__version__}')
+
 #%%
 # RealSense context 생성
 context = rs.context()
@@ -13,15 +16,16 @@ context = rs.context()
 # 연결된 모든 RealSense 장치의 정보 얻기
 devices = context.query_devices()
 
-# 모든 장치의 이름 출력
-for dev in devices:
-    print(dev.get_info(rs.camera_info.name))
-
-camera_model = devices[0].get_info(rs.camera_info.name)
-
-camera_name = camera_model.split(' ')[-1]
-
-print("camera_model: ", camera_name)
+# 장치가 없는 경우 예외 처리
+if len(devices) == 0:
+    print("No RealSense devices were detected.")
+else:
+    # 모든 장치의 이름 출력
+    for dev in devices:
+        print(dev.get_info(rs.camera_info.name))
+    camera_model = devices[0].get_info(rs.camera_info.name)
+    camera_name = camera_model.split(' ')[-1]
+    print("camera_model: ", camera_name)
 
 #%%
 # Configure depth and color streams

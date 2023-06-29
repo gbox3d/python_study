@@ -14,9 +14,9 @@ context = rs.context()
 devices = context.query_devices()
 
 # 모든 장치의 이름 출력
-for dev in devices:
-    print(dev.get_info(rs.camera_info.name))
-
+# for dev in devices:
+    # print(dev.get_info(rs.camera_info.name))
+#%%
 camera_model = devices[0].get_info(rs.camera_info.name)
 
 #%%
