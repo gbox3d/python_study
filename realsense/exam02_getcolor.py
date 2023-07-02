@@ -6,8 +6,9 @@ import cv2
 from PIL import Image
 from IPython.display import display
 
+#%%
 print(f'cv version: {cv2.__version__}')
-print(f'realsense version: {rs.__version__}')
+# print(f'realsense version: {rs.get_version()}')
 
 #%%
 # RealSense context 생성
@@ -101,3 +102,5 @@ display( Image.fromarray( cv2.cvtColor(images,cv2.COLOR_BGR2RGB) ) )
 # Stop streaming
 pipeline.stop()
 
+
+# %%
