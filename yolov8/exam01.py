@@ -1,12 +1,5 @@
 #%%
 import cv2 as cv
-
-from IPython.display import display
-import PIL.ImageFont as ImageFont
-import PIL.ImageDraw as ImageDraw
-import PIL.ImageColor as ImageColor
-import PIL.Image as Image
-
 # import ultralytics
 from ultralytics import YOLO,checks
 
@@ -34,7 +27,11 @@ for result in results:
         print(box.xywh)
         print(f'class : {int(box.cls.cpu().item())}' )
         print(f'conf : {int(box.conf.cpu().item()*100)}%' )
-display(Image.fromarray(cv.cvtColor(result_img, cv.COLOR_BGR2RGB)))
+
+# 이미지 저장
+cv.imwrite('./result.jpg',result_img)
+
+# display(Image.fromarray(cv.cvtColor(result_img, cv.COLOR_BGR2RGB)))
 #%%
 _boxes = results[0].boxes.data.cpu().detach().numpy()
 
