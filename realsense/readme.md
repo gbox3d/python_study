@@ -23,6 +23,7 @@ sudo /etc/init.d/dphys-swapfile restart swapon -s #Apply the change:
 sudo apt-get update && sudo apt-get dist-upgrade
 sudo apt-get install automake libtool vim cmake libusb-1.0-0-dev libx11-dev xorg-dev libglu1-mesa-dev
 sudo apt-get install libssl-dev
+sudo apt-get install pip
 export OPENSSL_ROOT_DIR=/usr/include/openssl
 ```
 
@@ -89,9 +90,7 @@ echo 'export PYTHONPATH=$PYTHONPATH:~/librealsense/build/wrappers/python' >> ~/.
 source ~/.bashrc
 ```
 
-
-
-
 ## ref
 [공식문서 바로가기](https://github.com/IntelRealSense/librealsense/tree/master/wrappers/python)  
 [파이썬 예제](https://github.com/IntelRealSense/librealsense/tree/master/wrappers/python/examples)
+[pi4]( https://github.com/datasith/Ai_Demos_RPi/wiki/Raspberry-Pi-4-and-Intel-RealSense-D435)
