@@ -16,3 +16,5 @@ yolov5/*.pt
 output/*
 
 runs/
+
+openai_study/key.txt
