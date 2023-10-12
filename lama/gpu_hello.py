@@ -15,13 +15,15 @@ model_name = config['model_name']
 
 #%%
 tokenizer = AutoTokenizer.from_pretrained(model_name,token=auth_token)
+#%%
 pipeline = transformers.pipeline(
     "text-generation",
     model=model_name,
     torch_dtype=torch.float16,
     device_map="auto",
+    token=auth_token
 )
-
+#%%
 def gen(x, max_length=200):
     sequences = pipeline(
         x,
@@ -43,3 +45,4 @@ print(gen("대한민국에서 유명한 인공지능 유튜버 3명만 나열해
 print(gen("페미니즘에 대해 한글로 설명해줘", 500))
 
 # %%
+print(gen('메타버스가 머야?'),500)
