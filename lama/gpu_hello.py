@@ -11,11 +11,7 @@ with open('config.yaml', 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     print(config)
 auth_token = config['auth_token']
-# model_name = "meta-llama/Llama-2-7b-chat-hf"
-model_name = "beomi/KoAlpaca-Polyglot-12.8B"
-
-
-#%%
+model_name = config['model_name']
 
 #%%
 tokenizer = AutoTokenizer.from_pretrained(model_name,token=auth_token)
