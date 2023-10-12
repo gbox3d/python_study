@@ -1,9 +1,23 @@
 #%%
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import transformers
+import torch
+
+import yaml
 
 #%%
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf",token="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")
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf",token="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")
+#load config.yaml
+with open('config.yaml', 'r') as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+    print(config)
+auth_token = config['auth_token']
+
+#%%
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf",token=auth_token)
+#%%
+model = AutoModelForCausalLM.from_pretrained(
+    "meta-llama/Llama-2-7b-chat-hf",
+    token="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")
 
 #%%
 # 사용자의 입력
