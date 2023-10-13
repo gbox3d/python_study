@@ -24,9 +24,10 @@ else:
     # 모든 장치의 이름 출력
     for dev in devices:
         print(dev.get_info(rs.camera_info.name))
-    camera_model = devices[0].get_info(rs.camera_info.name)
-    camera_name = camera_model.split(' ')[-1]
-    print("camera_model: ", camera_name)
+#%%  첫번째 장치의 이름 출력
+camera_model = devices[0].get_info(rs.camera_info.name)
+camera_name = camera_model.split(' ')[-1]
+print("camera_model: ", camera_name)
 
 #%%
 # Configure depth and color streams
