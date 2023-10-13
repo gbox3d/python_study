@@ -17,7 +17,7 @@ tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf",token=
 #%%
 model = AutoModelForCausalLM.from_pretrained(
     "meta-llama/Llama-2-7b-chat-hf",
-    token="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")
+    token=auth_token)
 
 #%%
 # 사용자의 입력
