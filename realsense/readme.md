@@ -1,10 +1,43 @@
 # intel real sense camera
 
-## pi 4
-pip pyrealsense2 로 간편 설치하면 컬러카메라와 통신이 되지않는등의 문제가 발생한다.  
-그래서 직접 sdk 를 빌드해야한다.  
-작업은 rasbian64 lite 에서 테스트했으며 문제 없이 동작함을 확인함.(2023.6.29 현제)    
+## ubuntu 
 
+```bash
+pip install pyrealsense2
+```
+
+## windows
+
+```bash
+pip install pyrealsense2
+```
+
+## udev 설정
+
+이 설정을 안하면 보안상의 문재로 항상 로컬머신이 로그인상태일때만 원격으로 사용가능하다(원격 사용시 불편함)
+
+```bash
+cd ~
+git clone https://github.com/IntelRealSense/librealsense.git
+cd librealsense
+sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/ 
+
+sudo su
+udevadm control --reload-rules && udevadm trigger
+exit
+
+```
+
+## pi 4
+
+### 바이너리 설치  
+```bash
+sudo apt-get install librealsense2-dkms
+sudo apt-get install librealsense2-utils
+```
+
+### 직접 빌드하여설치 하기  
+작업은 rasbian64 lite 에서 테스트했으며 문제 없이 동작함을 확인함.(2023.6.29 현제)    
 
 빌드를 위해서 swap 파일 늘리기
 
