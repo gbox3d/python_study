@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 import open3d as o3d
 
@@ -19,5 +20,8 @@ mesh.vertex_colors = o3d.utility.Vector3dVector(colors)
 R = mesh.get_rotation_matrix_from_xyz((0, np.pi, 0))
 mesh.rotate(R, center=(0,0,0))
 
+#%%
 # 메시를 시각화합니다.
 o3d.visualization.draw_geometries([mesh])
+
+# %%
