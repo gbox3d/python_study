@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 pinecone.init(
-    api_key="530b8e59-4465-4335-941d-0288cde044bc",
+    api_key=os.getenv("PINECONE_API_KEY"),
     environment=os.getenv("PINECONE_ENVIRONMENT"),
 )
 
@@ -40,6 +40,24 @@ print(len(texts))
 print(texts[0].metadata)
 print(texts[0].page_content)
 # %%
+
+index_name = os.getenv("PINECONE_INDEX_NAME")
+
+index_config = {
+    "metric": "cosine",
+    "dimension": 1536
+}
+
+# Step 1: Delete the existing index
+if index_name in pinecone.list_indexes():
+    pinecone.delete_index(index_name)
+    print(f"Deleted index: {index_name}")
+
+#%%
+# Step 2: Recreate the index
+# You should configure the index according to your requirements
+pinecone.create_index(index_name, **index_config)
+print(f"Created index: {index_name}")
 
 #%% embeddings
 embeddings = OpenAIEmbeddings()
