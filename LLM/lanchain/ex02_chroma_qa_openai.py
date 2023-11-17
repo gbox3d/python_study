@@ -26,7 +26,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #%%
-llm = OpenAI()
+llm = OpenAI(
+    max_tokens=512,
+)
 # Pinecone 벡터 스토어 설정
 embeddings = OpenAIEmbeddings()
 

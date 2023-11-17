@@ -70,7 +70,7 @@ qa_chain = VectorDBQA.from_chain_type(
         chain_type="stuff", 
         vectorstore=vector_store, 
         return_source_documents=True,
-        k=1
+        k=5
     )
 # qa_chain = RetrievalQA.from_chain_type(llm=llm,
 #     chain_type="stuff",
