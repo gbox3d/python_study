@@ -70,7 +70,7 @@ qa_chain = VectorDBQA.from_chain_type(
         chain_type="stuff", 
         vectorstore=vector_store, 
         return_source_documents=True,
-        k=1
+        k=5
     )
 # qa_chain = RetrievalQA.from_chain_type(llm=llm,
 #     chain_type="stuff",
@@ -80,7 +80,7 @@ qa_chain = VectorDBQA.from_chain_type(
 
 #%%
 start_tick = time.time()
-query = "정읍사 공원 에 대해서 알려줘"
+query = "정읍사에 대해서 알려줘 한글로"
 result = qa_chain({"query": query})
 print(f'Query time: {time.time() - start_tick}')
 

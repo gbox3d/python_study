@@ -4,3 +4,7 @@ pypdf
 tiktoken
 pinecone-client
 optimum
+python-dotenv
+cchardet
+chromadb
+Flask
