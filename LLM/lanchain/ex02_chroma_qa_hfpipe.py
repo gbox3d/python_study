@@ -39,10 +39,10 @@ hf_pipeline = pipeline(
     task="text-generation", 
     model=model_name, 
     tokenizer=tokenizer,
-    torch_dtype=torch.float16,
+    # torch_dtype=torch.float16,
     max_length=4096, 
-    temperature=0.1,
-    # do_sample=False,
+    temperature=0.0,
+    do_sample=False,
     device_map="auto" # GPU 상황에 맞게 자동으로 설정
     # device_map="cuda:0"  # GPU 0사용 설정
 )
@@ -63,7 +63,7 @@ vector_store = Chroma(
     embedding_function=embeddings
                       )
 # retriever = vector_store.as_retriever()
-retriever = vector_store.as_retriever(search_kwargs={"k": 1})
+# retriever = vector_store.as_retriever(search_kwargs={"k": 1})
 #%% QA chain 생성 
 qa_chain = VectorDBQA.from_chain_type(
         llm=llm, 
@@ -80,7 +80,7 @@ qa_chain = VectorDBQA.from_chain_type(
 
 #%%
 start_tick = time.time()
-query = "정읍사 공원 에 대해서 알려줘"
+query = "정읍사 대해서 알려줘"
 result = qa_chain({"query": query})
 print(f'Query time: {time.time() - start_tick}')
 
