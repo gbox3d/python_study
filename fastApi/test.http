@@ -1,0 +1,5 @@
+### root
+GET http://localhost:21010
+
+### item 
+GET http://localhost:21010/items/5?q=helloWorld
