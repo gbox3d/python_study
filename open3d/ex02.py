@@ -16,7 +16,7 @@ mesh = o3d.geometry.TriangleMesh(
 colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 mesh.vertex_colors = o3d.utility.Vector3dVector(colors)
 
-# 메시를 원점을 향하도록 회전합니다.
+# 메시를 원점을 중심으로 180도 회전합니다.
 R = mesh.get_rotation_matrix_from_xyz((0, np.pi, 0))
 mesh.rotate(R, center=(0,0,0))
 
