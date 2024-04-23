@@ -26,3 +26,5 @@ print(f"GPU 장치를 지원하도록 build 되었는지: {torch.backends.cuda.i
 
 #%%
 # device = torch.device('mps:0' if torch.backends.mps.is_available() else 'cpu')
+
+# %%
