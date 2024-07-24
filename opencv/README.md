@@ -1,6 +1,19 @@
 # myopencv-python-study
 [![logo](https://docs.opencv.org/4.2.0/opencv-logo-small.png)](https://opencv.org/)
 
+
+## 개발환경 설치
+
+```bash
+
+pip install msvc-runtime # window
+
+pip install opencv-contrib-python # python 용 opencv 설치
+
+ 
+
+```
+
 ## 참고 자료 
 
 [설치법 정리 바로가기](https://github.com/gbox3d/how_to_install_opencv)  
