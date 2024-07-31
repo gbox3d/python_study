@@ -11,6 +11,9 @@ win.geometry("320x240+50+50") # 지오메트리: 너비x높이+x좌표+y좌표
 lbl = tk.Label(win, text="Hello" ,font=("Arial Bold",50))
 lbl.grid(column=0, row=0)
 
+lbl_2 = tk.Label(win, text=f'tk version: {tk.TkVersion}')
+lbl_2.grid(column=0, row=1)
+
 print(f'{pathlib.Path.cwd()}')
 # lbl_2 = tk.Label(win, text=f'{pathlib.Path.cwd()}')
 # lbl_2.grid(column=0, row=1)
