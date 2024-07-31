@@ -1,6 +1,6 @@
 import sys
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtWidgets import QApplication, QWidget
 
 class MyApp(QWidget):
     def __init__(self):
@@ -18,4 +18,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MyApp()
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())  # PyQt6에서는 exec_() 대신 exec()를 사용합니다

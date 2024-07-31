@@ -1,11 +1,9 @@
-# pyqt5
+# pyqt6
 
 ## Library Installation
 
 ```bash
-
-pip install PyQt5  
-
+pip install PyQt6  
 ```
 
 ## QT Desinger 설치
@@ -19,17 +17,4 @@ brew install qt
 
 #실행
 designer
-
 ```
-2 pip 로 설치
-```bash
-
-#설치
-pip install PyQt5 PyQt5-tools
-
-#실행
-pyqt5-tools designer
-
-```
-
-
