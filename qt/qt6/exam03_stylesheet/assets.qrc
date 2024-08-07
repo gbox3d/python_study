@@ -1,0 +1,5 @@
+<RCC version="1.0">
+  <qresource prefix="/btn_icon">
+    <file>home.png</file>
+  </qresource>
+</RCC>
