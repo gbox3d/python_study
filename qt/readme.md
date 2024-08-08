@@ -29,3 +29,10 @@ pyside6-designer
 pyside6-rcc assets.qrc -o _rc.py
 ```
 
+
+## venv 환경에서 사용하기
+
+```bash
+source ../../.venv/bin/activate
+
+```
