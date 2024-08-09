@@ -1,15 +1,11 @@
 import sys
 
-# from PyQt6 import QtWidgets, uic
-# from PyQt6.QtWidgets import QApplication, QWidget
-
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtCore import QFile, QIODevice
-from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLabel
 
 
-class MyApp(QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         
@@ -20,7 +16,7 @@ class MyApp(QWidget):
                 sys.exit(-1)
             
             loader = QUiLoader()
-            self.ui = loader.load(ui_file)
+            self.ui = loader.load(ui_file,self)
             ui_file.close()
 
             if not self.ui:
@@ -30,13 +26,9 @@ class MyApp(QWidget):
         except Exception as e:
             print(f"Error: {e}")
             print("Please check the file name of the .ui file")
-            
-    
-    def show(self):
-        self.ui.show()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = MyApp()
+    window = MainWindow()
     window.show()
     sys.exit(app.exec())

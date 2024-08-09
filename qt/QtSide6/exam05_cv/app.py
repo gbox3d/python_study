@@ -8,7 +8,7 @@ from PySide6.QtGui import QImage, QPixmap
 import cv2
 
         
-class MyApp(QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         try:
@@ -18,7 +18,7 @@ class MyApp(QWidget):
                 sys.exit(-1)
             
             loader = QUiLoader()
-            self.ui = loader.load(ui_file)
+            self.ui = loader.load(ui_file,self)
             ui_file.close()
 
             if not self.ui:
@@ -50,7 +50,7 @@ class MyApp(QWidget):
             pixmap = QPixmap.fromImage(qt_image)
             self.ui.imgView.setPixmap(pixmap)
             
-            self.ui.show()
+            # self.ui.show()
             
         except Exception as e:
             print(f"Error: {e}")
@@ -61,5 +61,6 @@ class MyApp(QWidget):
             
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = MyApp()
+    window = MainWindow()
+    window.show()
     sys.exit(app.exec())

@@ -42,3 +42,11 @@ font-size: 20px;
 border-radius: 10px;
 ```
 
+## 리소스 파일 생성
+
+**리소스 컴파일러**
+```bash
+pyside6-rcc assets.qrc -o _rc.py
+```
+
+

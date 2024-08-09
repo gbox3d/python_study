@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtCore import QFile, QIODevice
 import _rc
 
-class MyApp(QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         try:
@@ -14,14 +14,14 @@ class MyApp(QWidget):
                 sys.exit(-1)
             
             loader = QUiLoader()
-            self.ui = loader.load(ui_file)
+            self.ui = loader.load(ui_file,self)
             ui_file.close()
 
             if not self.ui:
                 print(loader.errorString())
                 sys.exit(-1)
             
-            self.ui.show()
+            # self.ui.show()
             
         except Exception as e:
             print(f"Error: {e}")
@@ -29,5 +29,6 @@ class MyApp(QWidget):
             
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = MyApp()
+    window = MainWindow()
+    window.show()
     sys.exit(app.exec())

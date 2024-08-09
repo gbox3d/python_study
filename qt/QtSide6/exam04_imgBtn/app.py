@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QPushButton, QLabel
 import _rc
 
         
-class MyApp(QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         try:
@@ -16,7 +16,7 @@ class MyApp(QWidget):
                 sys.exit(-1)
             
             loader = QUiLoader()
-            self.ui = loader.load(ui_file)
+            self.ui = loader.load(ui_file,self)
             ui_file.close()
 
             if not self.ui:
@@ -40,5 +40,6 @@ class MyApp(QWidget):
             
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = MyApp()
+    window = MainWindow()
+    window.show()
     sys.exit(app.exec())

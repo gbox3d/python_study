@@ -13,20 +13,17 @@
   <property name="windowTitle">
    <string>OpenCV Camera</string>
   </property>
-  <widget class="QLabel" name="imgView">
+  <widget class="QWidget" name="widgetCamView" native="true">
    <property name="geometry">
     <rect>
      <x>50</x>
-     <y>90</y>
-     <width>491</width>
-     <height>331</height>
+     <y>50</y>
+     <width>461</width>
+     <height>391</height>
     </rect>
    </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
+   <property name="styleSheet">
+    <string notr="true">background-color : black;</string>
    </property>
   </widget>
  </widget>

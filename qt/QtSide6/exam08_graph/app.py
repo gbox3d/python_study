@@ -1,14 +1,20 @@
 import sys
+from PySide6.QtWidgets import QApplication, QWidget
 
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice
-from PySide6.QtWidgets import QApplication,QWidget
+
+import PySide6
+import pyqtgraph as pg
+pg.setConfigOption('useOpenGL', True)  # 선택사항: OpenGL 사용 (성능 향상을 위해)
+pg.setConfigOption('foreground', 'k')  # 선택사항: 전경색 설정
+pg.setConfigOption('background', 'w')  # 선택사항: 배경색 설정
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         try :
-            ui_file = QFile("layout.ui")
+            ui_file = QFile("layout_main.ui")
             if not ui_file.open(QIODevice.ReadOnly):
                 print(f"Cannot open {ui_file.fileName()}: {ui_file.errorString()}")
                 sys.exit(-1)
@@ -20,19 +26,23 @@ class MainWindow(QWidget):
             if not self.ui:
                 print(loader.errorString())
                 sys.exit(-1)
+                
+            # 그래프 생성
+            # pyqtgraph 플롯 위젯 생성
+            plot_widget = pg.PlotWidget(self.ui.widgetPlotGraph)
             
-            self.ui.btn_Test.clicked.connect(self.on_btn_test_clicked)
+            # 플롯 위젯 크기 설정
+            plot_widget.setGeometry(self.ui.widgetPlotGraph.rect())
             
-            # self.show()
+            # 데이터 플로팅
+            x = [0, 1, 2, 3, 4, 5]
+            y = [0, 1, 4, 9, 16, 25]
+            plot_widget.plot(x, y, pen='r')
             
+                
         except Exception as e:
-            print(f"Error: {e}")
-            print("Please check the file name of the .ui file")
-
-    def on_btn_test_clicked(self):
-        # 버튼 클릭 시 라벨 텍스트 변경
-        self.ui.test_label.setText("Hello Qt")
-        
+                print(f"Error loading image: {e}")
+                sys.exit(-1)
     def closeEvent(self, event):
         # 창이 닫히기 전에 호출되는 이벤트
         print("closeEvent")
