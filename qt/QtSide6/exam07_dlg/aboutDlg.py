@@ -3,6 +3,8 @@ from PySide6.QtWidgets import QApplication, QDialog
 from PySide6.QtCore import QFile, QIODevice
 from PySide6.QtUiTools import QUiLoader
 
+UIloader = QUiLoader()
+
 class AboutDlg(QDialog):
     def __init__(self):
         super().__init__()
@@ -12,12 +14,12 @@ class AboutDlg(QDialog):
             print(f"Cannot open {ui_file.fileName()}: {ui_file.errorString()}")
             sys.exit(-1)
         
-        loader = QUiLoader()
-        self.ui = loader.load(ui_file)
+        
+        self.ui = UIloader.load(ui_file)
         ui_file.close()
 
         if not self.ui:
-            print(loader.errorString())
+            print(UIloader.errorString())
             sys.exit(-1)
             
         # Connect the buttonBox signals to our custom slots

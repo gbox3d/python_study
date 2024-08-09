@@ -6,6 +6,8 @@ from PySide6.QtGui import QImage, QPixmap
 
 import cv2
 
+UIloader = QUiLoader()
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -15,12 +17,12 @@ class MainWindow(QWidget):
                 print(f"Cannot open {ui_file.fileName()}: {ui_file.errorString()}")
                 sys.exit(-1)
             
-            loader = QUiLoader()
-            self.ui = loader.load(ui_file,self)
+            
+            self.ui = UIloader.load(ui_file,self)
             ui_file.close()
 
             if not self.ui:
-                print(loader.errorString())
+                print(UIloader.errorString())
                 sys.exit(-1)
                 
             self.ui.imgView = QLabel(self.ui.widgetCamView)

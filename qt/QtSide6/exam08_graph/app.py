@@ -10,6 +10,8 @@ pg.setConfigOption('useOpenGL', True)  # 선택사항: OpenGL 사용 (성능 향
 pg.setConfigOption('foreground', 'k')  # 선택사항: 전경색 설정
 pg.setConfigOption('background', 'w')  # 선택사항: 배경색 설정
 
+UIloader = QUiLoader()
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -19,12 +21,12 @@ class MainWindow(QWidget):
                 print(f"Cannot open {ui_file.fileName()}: {ui_file.errorString()}")
                 sys.exit(-1)
             
-            loader = QUiLoader()
-            self.ui = loader.load(ui_file,self) # self를 넣어줘야 ui 파일에서 정의한 위젯을 사용할 수 있음
+            
+            self.ui = UIloader.load(ui_file,self) # self를 넣어줘야 ui 파일에서 정의한 위젯을 사용할 수 있음
             ui_file.close()
             
             if not self.ui:
-                print(loader.errorString())
+                print(UIloader.errorString())
                 sys.exit(-1)
                 
             # 그래프 생성

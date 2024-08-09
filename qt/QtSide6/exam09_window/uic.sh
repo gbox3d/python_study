@@ -1,0 +1,1 @@
+pyside6-uic layout_main.ui -o layout_main.py

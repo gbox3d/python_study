@@ -1,8 +1,15 @@
 import sys
 
+from PySide6  import __version__ as PySide6_version
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice
 from PySide6.QtWidgets import QApplication,QWidget
+
+
+UIloader = QUiLoader()
+
+print(f"PySide6 version: {PySide6_version}")
+# print(f"Qt version: {qVersion()}")
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -13,12 +20,12 @@ class MainWindow(QWidget):
                 print(f"Cannot open {ui_file.fileName()}: {ui_file.errorString()}")
                 sys.exit(-1)
             
-            loader = QUiLoader()
-            self.ui = loader.load(ui_file,self) # self를 넣어줘야 ui 파일에서 정의한 위젯을 사용할 수 있음
+            
+            self.ui = UIloader.load(ui_file,self) # self를 넣어줘야 ui 파일에서 정의한 위젯을 사용할 수 있음
             ui_file.close()
             
             if not self.ui:
-                print(loader.errorString())
+                print(UIloader.errorString())
                 sys.exit(-1)
             
             self.ui.btn_Test.clicked.connect(self.on_btn_test_clicked)
