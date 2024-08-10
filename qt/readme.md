@@ -5,9 +5,7 @@ PySide6는 Qt 6의 최신 버전을 지원한다.
 
 ## Library Installation
 
-qt 파이썬 공식 포트는 pyside6 이다.  
-https://wiki.qt.io/Qt_for_Python  
-https://pypi.org/project/PySide6    
+
 
 **호환성**  
 6.7 버전 2024년 8월 현재 , python 3.11, 3.12 실행확임됨.  
@@ -35,3 +33,12 @@ pyside6-rcc assets.qrc -o _rc.py
 source ../../.venv/bin/activate
 
 ```
+
+## 참고자료
+qt 파이썬 공식 포트는 pyside6 이다.  
+https://wiki.qt.io/Qt_for_Python  
+https://pypi.org/project/PySide6    
+
+강좌
+https://www.pythonguis.com/pyside6/
+
