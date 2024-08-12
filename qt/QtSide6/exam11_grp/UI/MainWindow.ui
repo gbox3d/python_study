@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>530</width>
+    <height>462</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>530</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuhome">
+    <property name="title">
+     <string>home</string>
+    </property>
+    <addaction name="actionitem1"/>
+   </widget>
+   <widget class="QMenu" name="menucommand">
+    <property name="title">
+     <string>command</string>
+    </property>
+    <addaction name="actionclear"/>
+    <addaction name="actionload"/>
+    <addaction name="actionsave"/>
+   </widget>
+   <widget class="QMenu" name="menugrapics">
+    <property name="title">
+     <string>grapics</string>
+    </property>
+    <addaction name="actionline"/>
+    <addaction name="actionrect"/>
+    <addaction name="actionimage"/>
+   </widget>
+   <addaction name="menuhome"/>
+   <addaction name="menucommand"/>
+   <addaction name="menugrapics"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionclear">
+   <property name="text">
+    <string>clear</string>
+   </property>
+  </action>
+  <action name="actionload">
+   <property name="text">
+    <string>load</string>
+   </property>
+  </action>
+  <action name="actionsave">
+   <property name="text">
+    <string>save</string>
+   </property>
+  </action>
+  <action name="actionitem1">
+   <property name="text">
+    <string>item1</string>
+   </property>
+  </action>
+  <action name="actionline">
+   <property name="text">
+    <string>line</string>
+   </property>
+  </action>
+  <action name="actionrect">
+   <property name="text">
+    <string>rect</string>
+   </property>
+  </action>
+  <action name="actionimage">
+   <property name="text">
+    <string>image</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
