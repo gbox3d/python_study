@@ -2,7 +2,7 @@ import sys
 import random
 from PySide6.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QVBoxLayout
 from PySide6.QtWidgets import QFileDialog, QGraphicsPixmapItem,QGraphicsItem
-from PySide6.QtGui import QPen, QColor, QBrush, QCursor, QPainter,QPixmap
+from PySide6.QtGui import QPen, QColor, QBrush, QCursor, QPainter,QPixmap,QTransform
 from PySide6.QtCore import QTimer, QLineF, QRectF, Qt, QPointF
 
 import UI.MainWindow
@@ -17,6 +17,8 @@ class MainWindow(QMainWindow, UI.MainWindow.Ui_MainWindow):
 
         self.view = QGraphicsView(self.centralwidget)
         layout.addWidget(self.view)
+        
+        
 
         self.scene = QGraphicsScene(self)
         self.view.setScene(self.scene)
@@ -29,8 +31,13 @@ class MainWindow(QMainWindow, UI.MainWindow.Ui_MainWindow):
         self.scene.setSceneRect(0,0,256,256)
         
         
+        greenPen = QPen(Qt.green)
+        whitePen = QPen(Qt.white)
+        redPen = QPen(Qt.red)
+        bluePen = QPen(Qt.blue)
+        
         #씬영역 전체 칠하기
-        self.scene.addRect(self.scene.sceneRect(), QPen(Qt.NoPen), QBrush(QColor(0, 0, 0)))
+        self.scene.addRect(self.scene.sceneRect(),greenPen)
         
         print(self.scene.sceneRect())
         
@@ -39,9 +46,16 @@ class MainWindow(QMainWindow, UI.MainWindow.Ui_MainWindow):
         self.scene.addLine(self.scene.sceneRect().width()/2,0,self.scene.sceneRect().width()/2,self.scene.sceneRect().height(), QPen(Qt.yellow))
         
         
-        self.greenRect = self.scene.addRect(0,0,64,64, QPen(Qt.green))
+        self.greenRect = self.scene.addRect(0,0,64,64, greenPen)
+        self.greenRect.setTransformOriginPoint(32,32)
         
-        self.greenRect.setFlag(QGraphicsItem.ItemIsMovable)
+        self.greenRect.setRotation(45)
+        
+        self.greenRect.setPos(
+            self.scene.sceneRect().width()/2 - self.greenRect.rect().width()/2 ,
+            self.scene.sceneRect().height()/2 - self.greenRect.rect().height()/2)
+        
+        # self.greenRect.setFlag(QGraphicsItem.ItemIsMovable)
 
         # 십자선 그리기
         # self.draw_crosshair()
@@ -53,20 +67,16 @@ class MainWindow(QMainWindow, UI.MainWindow.Ui_MainWindow):
         self.actionrect.triggered.connect(self.draw_random_rectangle)
         
         self.actionimage.triggered.connect(self.load_image)
-
-    # def draw_crosshair(self):
-    #     # 십자선 색상 및 스타일 설정
-    #     pen = QPen(QColor(0, 0, 0))  # 회색
-    #     pen.setStyle(Qt.DashLine)  # 점선 스타일
-    #     pen.setWidth(1)
-
-    #     # 수평선 그리기
-    #     line = QLineF(0,0, self.scene.sceneRect().left(), self.scene.sceneRect().top())
-    #     self.scene.addLine(line, pen)
         
-    #     # # 수직선 그리기
-    #     # line = QLineF(0, self.scene.sceneRect().top()/2, 0, self.scene.sceneRect().bottom()/2)
-    #     # self.scene.addLine(line, pen)
+        # 타이머 생성 및 시작
+        self.timer = QTimer()
+        self.timer.setInterval(1000/60)
+        self.timer.timeout.connect(self.onAnimation)
+        self.timer.start()
+        
+    
+    def onAnimation(self):
+        self.greenRect.setRotation(self.greenRect.rotation()+1)
 
     def draw_random_line(self):
         scene_rect = self.scene.sceneRect()

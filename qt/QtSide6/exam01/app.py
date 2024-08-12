@@ -5,8 +5,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice
 from PySide6.QtWidgets import QApplication,QWidget
 
-
-UIloader = QUiLoader()
+UIloader = QUiLoader() # UI 파일을 로드하기 위한 객체 , 윈도우에서는 선언 되는 순서가 중요함 반드시 QApplication 객체 생성 전 선언되어야 함
 
 print(f"PySide6 version: {PySide6_version}")
 # print(f"Qt version: {qVersion()}")
