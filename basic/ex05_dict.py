@@ -15,3 +15,7 @@ _dict['name'] = 'esp8266'
 _dict['id'] = 1
 print(_dict)
 print(_dict['name'],_dict['id'])
+# %% to list
+print([ [k,v] for k,v in _dict.items() ])
+
+# %%
