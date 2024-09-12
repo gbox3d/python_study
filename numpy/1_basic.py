@@ -24,6 +24,11 @@ print( f'array length use len {len(arr1)} ')
 
 print(arr1,type(arr1))
 print(f'data type : {arr1.dtype}')
+
+#%%
+print(arr1[0:2])
+print(data1[0:2])
+
 # %%
 _arr1 = arr1.astype(np.float)
 print(_arr1)
@@ -47,9 +52,8 @@ print( (_ary2).sum()) # 조건에 맞는 원소 객수 구하기
 #골라내기
 print(_ary1[_ary2])
 
-
 # %%
-_ary5 = np.array([20,21,22,23])
+_arg3 = np.array([1,2,3,4])
 _ary6 = np.array(['a','b','c','d'])
 _ary6[_ary3 > 2] = '-'
 print(_ary6)
@@ -76,7 +80,7 @@ a = np.zeros((3,) + (2,2)) # (3,2,2) 형식이 만들어짐
 print(a)
 print(a.shape)
 # %%
-a = np.zeros((3,) + (1,)) # (3,1) 형식이 만들어이짐
+a = np.zeros((3,1)) # (3,1) 형식이 만들어이짐
 print(a) 
 print(a.shape)
 # %%
