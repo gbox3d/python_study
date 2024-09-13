@@ -30,7 +30,7 @@ print(arr1[0:2])
 print(data1[0:2])
 
 # %%
-_arr1 = arr1.astype(np.float)
+_arr1 = arr1.astype(np.float16)
 print(_arr1)
 print(_arr1.dtype)
 # %%
