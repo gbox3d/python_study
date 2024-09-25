@@ -11,6 +11,7 @@ _ary2 = np.expand_dims(_ary,axis=0) #첫번째 축
 print(_ary2.shape)
 print(_ary2)
 
+#%%
 __ary2 = np.reshape(_ary,(1,12)) # 위의 예와 똑같다.
 print(__ary2.shape)
 print(__ary2)

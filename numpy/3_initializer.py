@@ -36,3 +36,12 @@ _rand_array = _rand_array.astype(np.int32)
 print(_rand_array)
 
 # %%
+
+_rand_int_array = np.random.randint(0,100,10)
+print(_rand_int_array)
+
+# %%
+_rand_float_array = np.random.uniform(0,100,10)
+print(_rand_float_array)
+
+# %%
