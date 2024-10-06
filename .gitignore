@@ -18,3 +18,4 @@ output/*
 runs/
 
 openai_study/key.txt
+.venv/
