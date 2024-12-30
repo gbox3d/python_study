@@ -1,7 +1,4 @@
 #%%
-#PIL 예쩨
-
-
 import numpy as np
 
 import PIL.Image as Image
