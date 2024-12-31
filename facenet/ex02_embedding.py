@@ -1,4 +1,5 @@
 #%%
+import os
 import torch
 from torchvision.transforms import ToTensor
 from torchvision.transforms import ToPILImage
@@ -21,24 +22,16 @@ print("MTCNN 모델 로드 완료")
 resnet = InceptionResnetV1(pretrained='vggface2').eval().to(device)
 print("FaceNet 모델 로드 완료")
 
-
-#%%
-# 멤버 이미지 임베딩 생성
-# def get_embedding(image_path):
-#     image = Image.open(image_path)
-#     face, _ = mtcnn(image, return_prob=True)
-#     if face is not None:
-#         face = face[0].unsqueeze(0).to(device)
-#         embedding = resnet(face).detach().cpu().numpy()
-#         return embedding
-#     else:
-#         raise ValueError(f"얼굴을 찾을 수 없습니다: {image_path}")
-
-# 유사도 계산 함수
+# 유사도 계산 함수(정규화 되지않은 데이터에 사용)
 def cosine_similarity(vec1, vec2):
     vec1 = vec1 / np.linalg.norm(vec1)
     vec2 = vec2 / np.linalg.norm(vec2)
     return np.dot(vec1, vec2)
+
+# 정규화된 데이터에 사용
+def euclidean_distance(vec1, vec2):
+    return np.linalg.norm(vec1 - vec2)
+
 
 #%%
 # 이미지 읽기 및 멤버 임베딩 생성
@@ -83,10 +76,10 @@ def prewhiten(img):
 #%%
 
 # 폰트 설정
-font_size = 64  # 원하는 텍스트 크기
+font_size = 20  # 원하는 텍스트 크기
 try:
-    font = ImageFont.truetype("arial.ttf", font_size)  # Arial 폰트를 사용하는 경우
-    print("Arial 폰트를 사용합니다.")
+    font = ImageFont.truetype("DejaVuSans.ttf", font_size)  # Arial 폰트를 사용하는 경우
+    print("DejaVuSans 폰트를 사용합니다.")
 except IOError:
     font = ImageFont.load_default()  # Arial 폰트를 못 찾으면 기본 폰트를 사용
     print("기본 폰트를 사용합니다.")
@@ -109,24 +102,34 @@ if boxes is not None:
         
         # 얼굴 임베딩 생성
         face_embedding = resnet(face_tensor).detach().cpu().numpy()
-        print(f"Face embedding shape: {face_embedding.shape}")
-        print(f"member_embedding shape: {member_embedding.shape}")
+        # print(f"Face embedding shape: {face_embedding.shape}")
+        # print(f"member_embedding shape: {member_embedding.shape}")
        
         # 유사도 계산
         # similarity = cosine_similarity(member_embedding, face_embedding)
         # 유사도 계산 전 1차원 벡터로 변환
-        similarity = cosine_similarity(member_embedding.flatten(), face_embedding.flatten())
+        cos_similarity = cosine_similarity(member_embedding.flatten(), face_embedding.flatten())
+        euclidean_similarity = euclidean_distance(member_embedding.flatten(), face_embedding.flatten())
 
         # 박스 및 유사도 표시
         draw.rectangle(box.tolist(), outline=(255, 0, 0), width=3)
-        draw.text((box[0], box[1] - 10), f"{similarity:.2f}", fill=(255, 255, 0), font=font)
+        draw.text((box[0], box[1] - 10), f"{cos_similarity:.2f}", fill=(255, 255, 0), font=font)
         
         display(face)
-        print(f"유사도: {similarity:.2f}")
+        
+        print(f"cosine similarity: {cos_similarity:.2f}")
+        print(f"euclidean similarity: {euclidean_similarity:.2f}")
+        
 
     # 결과 출력
     display(group_image)
-    group_image.save("result.jpg")
+    
+    # result/ 없으면 만들기
+    if not os.path.exists('./result'):
+        os.makedirs('./result')
+
+    
+    group_image.save("./result/result.jpg")
 else:
     print("그룹 이미지에서 얼굴을 감지할 수 없습니다.")
 # %%
