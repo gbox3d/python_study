@@ -19,3 +19,5 @@ runs/
 
 openai_study/key.txt
 .venv/
+
+temp/
