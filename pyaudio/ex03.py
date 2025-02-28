@@ -83,14 +83,21 @@ class ImprovedVoiceRecorder:
                     # 데이터 저장
                     self.frames.append(audio_data)
                     
+                    # 중요: 녹음 중지 로직 수정 - 음성 감지 조건과 동일한 조건 사용
+                    is_silent = not is_speech  # 음성 감지와 동일한 로직 사용
+                    
                     # 음성 감지 여부에 따라 무음 카운터 갱신
-                    if is_speech:
+                    if not is_silent:
                         self.silence_frames = 0
                     else:
                         self.silence_frames += 1
                     
                     # 무음 지속 시간 계산 (초)
                     silence_duration = (self.silence_frames * self.CHUNK) / self.RATE
+                    
+                    # 디버그 출력에 무음 시간 표시
+                    if self.debug_mode and self.recording:
+                        print(f" [무음: {silence_duration:.1f}/{self.SILENCE_THRESHOLD:.1f}초]", end="")
                     
                     # 지정된 시간 이상 무음이면 녹음 종료
                     if silence_duration >= self.SILENCE_THRESHOLD:

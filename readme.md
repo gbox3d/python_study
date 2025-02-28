@@ -1,5 +1,9 @@
 # python study 자료
 
+**둥근모꼴폰트 받기**
+
+[바로가기](https://cactus.tistory.com/193)
+
 ## rest api
 
 예제에 사용됨 모듈 
@@ -11,3 +15,5 @@ flask,requests
 
 ## 참고문헌 
 https://wikidocs.net/38618
+
+
