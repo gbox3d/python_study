@@ -10,7 +10,7 @@ from IPython.display import display
 print( f"opencv version : {cv.__version__}")
 
 #%%
-url = f'rtsp://210.99.70.120:1935/live/cctv050.stream' # fxt
+url = f'rtsp://admin:71021707@192.168.4.62:554/stream_ch00_0' # fxt
 
 #%%
 cap = cv.VideoCapture(url)
@@ -24,3 +24,5 @@ if cap.isOpened() :
         print('capture failed')
     cap.release()
 
+
+# %%
