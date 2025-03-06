@@ -1,7 +1,7 @@
-import pyaudio #pip install pyaudio
+import pyaudio
 import wave
 import numpy as np
-import webrtcvad # pip install webrtcvad
+import webrtcvad
 import struct
 import time
 from datetime import datetime
@@ -15,31 +15,25 @@ class VoiceDetector:
     
     # 기본 설정값 (클래스 상수)
     DEFAULT_SETTINGS = {
-        # VAD 및 감지 설정
         "vad_mode": 0,                 # VAD 감도 (0: 낮음 ~ 3: 높음)
         "voice_threshold": 300,        # 음성 감지 임계값
         "required_speech_frames": 3,   # 연속 감지 필요 프레임 수
         "human_freq_low": 85,          # 사람 목소리 주파수 하한 (Hz)
         "human_freq_high": 255,        # 사람 목소리 주파수 상한 (Hz)
-        "smoothing_factor": 0.3,       # RMS 스무딩 계수 (낮을수록 부드러움)
-        "use_rms": True,               # RMS 분석 사용 여부
-        "use_freq": True,              # 주파수 분석 사용 여부
-        
-        # 오디오 설정
-        "format": pyaudio.paInt16,     # 오디오 형식
-        "channels": 1,                 # 채널 수
-        "rate": 16000,                 # 샘플링 레이트 (Hz)
-        "chunk": 480                   # 청크 크기 (샘플 수)
+        "smoothing_factor": 0.3        # RMS 스무딩 계수 (낮을수록 부드러움)
     }
-    
-    # VAD 지원 샘플링 레이트
-    SUPPORTED_VAD_RATES = [8000, 16000, 32000, 48000]
     
     # 설정 파일 기본 경로
     DEFAULT_SETTINGS_PATH = "./temp/voice_detector_settings.json"
     
     
     def __init__(self, debug_mode=False, settings_path=None):
+        # 오디오 설정 (변경 불가능)
+        self.FORMAT = pyaudio.paInt16
+        self.CHANNELS = 1
+        self.RATE = 16000  # WebRTC VAD는 8000, 16000, 32000, 48000Hz만 지원
+        self.CHUNK = 480  # VAD에 적합한 프레임 크기 (30ms)
+        
         # 설정 파일 경로
         self.settings_path = settings_path or self.DEFAULT_SETTINGS_PATH
         
@@ -70,14 +64,6 @@ class VoiceDetector:
         self.human_freq_low = self.DEFAULT_SETTINGS["human_freq_low"]
         self.human_freq_high = self.DEFAULT_SETTINGS["human_freq_high"]
         self.smoothing_factor = self.DEFAULT_SETTINGS["smoothing_factor"]
-        self.use_rms = self.DEFAULT_SETTINGS["use_rms"]
-        self.use_freq = self.DEFAULT_SETTINGS["use_freq"]
-        
-        # 오디오 설정 초기화
-        self.FORMAT = self.DEFAULT_SETTINGS["format"]
-        self.CHANNELS = self.DEFAULT_SETTINGS["channels"]
-        self.RATE = self.DEFAULT_SETTINGS["rate"]
-        self.CHUNK = self.DEFAULT_SETTINGS["chunk"]
         
         # 파일이 존재하면 설정 불러오기
         try:
@@ -90,27 +76,17 @@ class VoiceDetector:
     def get_current_settings(self):
         """현재 설정값 딕셔너리 반환"""
         return {
-            # VAD 및 감지 설정
             "vad_mode": self.vad_mode,
             "voice_threshold": self.VOICE_THRESHOLD,
             "required_speech_frames": self.required_speech_frames,
             "human_freq_low": self.human_freq_low,
             "human_freq_high": self.human_freq_high,
-            "smoothing_factor": self.smoothing_factor,
-            "use_rms": self.use_rms,
-            "use_freq": self.use_freq,
-            
-            # 오디오 설정
-            "format": self.FORMAT,
-            "channels": self.CHANNELS,
-            "rate": self.RATE,
-            "chunk": self.CHUNK
+            "smoothing_factor": self.smoothing_factor
         }
     
     def apply_settings(self, settings):
         """설정값 딕셔너리를 적용"""
         # 각 설정값 적용 (존재하는 키만)
-        # VAD 및 감지 설정 적용
         if "vad_mode" in settings:
             self.vad_mode = settings["vad_mode"]
             # VAD 모드 즉시 적용
@@ -131,67 +107,6 @@ class VoiceDetector:
         
         if "smoothing_factor" in settings:
             self.smoothing_factor = settings["smoothing_factor"]
-            
-        if "use_rms" in settings:
-            self.use_rms = settings["use_rms"]
-            
-        if "use_freq" in settings:
-            self.use_freq = settings["use_freq"]
-        
-        # 오디오 설정 적용
-        audio_settings_changed = False
-        
-        if "format" in settings:
-            self.FORMAT = settings["format"]
-            audio_settings_changed = True
-        
-        if "channels" in settings:
-            # print(settings["channels"])
-            self.CHANNELS = settings["channels"]
-            audio_settings_changed = True
-        
-        if "rate" in settings:
-            # VAD 지원 샘플링 레이트인지 확인
-            if settings["rate"] in self.SUPPORTED_VAD_RATES:
-                self.RATE = settings["rate"]
-                audio_settings_changed = True
-            else:
-                if self.debug_mode:
-                    print(f"경고: {settings['rate']}Hz는 WebRTC VAD가 지원하지 않습니다. 지원 레이트: {self.SUPPORTED_VAD_RATES}")
-        
-        if "chunk" in settings:
-            self.CHUNK = settings["chunk"]
-            audio_settings_changed = True
-        
-        # 오디오 설정이 변경된 경우 스트림 재초기화
-        if audio_settings_changed and self.stream is not None:
-            self._reinitialize_stream()
-            
-        return audio_settings_changed
-    
-    def _reinitialize_stream(self):
-        """오디오 설정 변경 후 스트림 재초기화"""
-        # 현재 장치 인덱스 저장
-        device_index = None
-        if hasattr(self.stream, '_device_index'):
-            device_index = self.stream._device_index
-            
-        # 기존 스트림 종료
-        self.stream.stop_stream()
-        self.stream.close()
-        
-        # 새 설정으로 스트림 재생성
-        self.stream = self.p.open(
-            format=self.FORMAT,
-            channels=self.CHANNELS,
-            rate=self.RATE,
-            input=True,
-            input_device_index=device_index,
-            frames_per_buffer=self.CHUNK
-        )
-        
-        if self.debug_mode:
-            print(f"오디오 설정 변경됨: 레이트={self.RATE}Hz, 청크={self.CHUNK}")
     
     def save_settings(self, file_path=None):
         """현재 설정을 파일에 저장"""
@@ -265,10 +180,6 @@ class VoiceDetector:
                 input_device_index=device_index,  # 선택된 장치 인덱스 사용
                 frames_per_buffer=self.CHUNK
             )
-            # 장치 인덱스 저장 (나중에 재초기화할 때 사용)
-            if device_index is not None:
-                self.stream._device_index = device_index
-    
     
     def get_audio_devices(self):
         """시스템에서 사용 가능한 모든 오디오 입력 장치 목록 반환"""
@@ -332,11 +243,13 @@ class VoiceDetector:
         print(f"측정 완료. 배경 소음 레벨: {background_noise:.2f}")
         print(f"음성 감지 임계값: {self.VOICE_THRESHOLD:.2f}로 설정됨")
     
-    def detect_speech(self, audio_data):
-        """개선된 음성 감지 로직 - 내부 설정 사용
+    def detect_speech(self, audio_data, use_rms=True, use_freq=True):
+        """개선된 음성 감지 로직 - 옵션 선택 가능
         
         Args:
             audio_data: 분석할 오디오 데이터
+            use_rms: RMS 분석 사용 여부 (기본값: True)
+            use_freq: 주파수 분석 사용 여부 (기본값: True)
             
         Returns:
             tuple: (speech_detected, vad_result, rms_value, rms_result, freq_result)
@@ -349,21 +262,16 @@ class VoiceDetector:
         # WebRTC VAD로 음성 감지 (항상 실행)
         try:
             vad_result = self.vad.is_speech(audio_data, self.RATE)
-        # except:
-        #     print("VAD 오류")
-        #     vad_result = False
-        except Exception as e:
-            if self.debug_mode:
-                print(f"VAD 오류: {e}")
+        except:
             vad_result = False
         
         # RMS 기반 감지 (선택적 실행)
         rms = self.get_rms(audio_data)
         self.smoothed_rms = self.smoothing_factor * rms + (1 - self.smoothing_factor) * self.smoothed_rms
-        rms_result = self.smoothed_rms > self.VOICE_THRESHOLD if self.use_rms else False
+        rms_result = self.smoothed_rms > self.VOICE_THRESHOLD if use_rms else False
         
         # 주파수 분석 기반 감지 (선택적 실행)
-        if self.use_freq:
+        if use_freq:
             freq_result = self.check_human_freq(audio_data)
         else:
             freq_result = False
@@ -376,11 +284,11 @@ class VoiceDetector:
             freq_icon = "✓" if freq_result else "✗"
             
             # 최종 결정 로직 (선택에 따라 다름)
-            if self.use_rms and self.use_freq:
+            if use_rms and use_freq:
                 speech = "🗣️" if (vad_result and (rms_result or freq_result)) else "  "
-            elif self.use_rms:
+            elif use_rms:
                 speech = "🗣️" if (vad_result and rms_result) else "  "
-            elif self.use_freq:
+            elif use_freq:
                 speech = "🗣️" if (vad_result and freq_result) else "  "
             else:
                 speech = "🗣️" if vad_result else "  "
@@ -389,13 +297,13 @@ class VoiceDetector:
             print(f"VAD: {vad_icon}, RMS: {rms_icon}({self.smoothed_rms:.1f}/{self.VOICE_THRESHOLD:.1f}), FREQ: {freq_icon} {speech}", end='\r')
         
         # 최종 결과 결정 (선택에 따라 다름)
-        if self.use_rms and self.use_freq:
+        if use_rms and use_freq:
             # 둘 다 사용하는 경우 - 하나라도 True면 충분
             speech_detected = vad_result and (rms_result or freq_result)
-        elif self.use_rms:
+        elif use_rms:
             # RMS만 사용하는 경우
             speech_detected = vad_result and rms_result
-        elif self.use_freq:
+        elif use_freq:
             # 주파수만 사용하는 경우
             speech_detected = vad_result and freq_result
         else:
@@ -461,72 +369,12 @@ class VoiceDetector:
             if self.debug_mode:
                 print(f"RMS 계산 오류: {e}")
             return 0
-    
-    def get_format_name(self, format_value):
-        """포맷 값을 사람이 읽을 수 있는 이름으로 변환"""
-        format_names = {
-            pyaudio.paInt8: "8-bit Integer",
-            pyaudio.paInt16: "16-bit Integer",
-            pyaudio.paInt24: "24-bit Integer",
-            pyaudio.paInt32: "32-bit Integer",
-            pyaudio.paFloat32: "32-bit Float"
-        }
-        return format_names.get(format_value, f"Unknown ({format_value})")
-    
-    def get_audio_settings_summary(self):
-        """현재 오디오 설정 요약 정보 반환"""
-        return {
-            "format": self.get_format_name(self.FORMAT),
-            "channels": self.CHANNELS,
-            "rate": f"{self.RATE} Hz",
-            "chunk": f"{self.CHUNK} samples ({self.CHUNK / self.RATE * 1000:.1f} ms)"
-        }
 
-        
-        
-    
+
 # 사용 예시
 if __name__ == "__main__":
     # 디버그 모드로 설정
     detector = VoiceDetector(debug_mode=True)
-    
-    # 오디오 설정 요약 정보 가져오기
-    audio_settings = detector.get_audio_settings_summary()
-    
-    # 모든 설정값 가져오기
-    all_settings = detector.get_current_settings()
-    
-    # 출력
-    print("===== 오디오 샘플링 정보 =====")
-    print(f"포맷: {audio_settings['format']}")
-    print(f"채널: {audio_settings['channels']}")
-    print(f"샘플링 레이트: {audio_settings['rate']}")
-    print(f"청크 크기: {audio_settings['chunk']}")
-    
-    print("\n===== VAD 관련 설정 =====")
-    print(f"VAD 모드: {all_settings['vad_mode']} (0: 낮음 ~ 3: 높음)")
-    print(f"VAD 지원 샘플링 레이트: {detector.SUPPORTED_VAD_RATES}")
-    
-    # 프레임 크기 검증 (VAD 호환성)
-    chunk_samples = detector.CHUNK
-    chunk_ms = (chunk_samples * 1000) / detector.RATE
-    
-    print(f"\n현재 청크 크기: {chunk_samples} 샘플 ({chunk_ms:.1f}ms)")
-    
-    # VAD 유효 프레임 크기 (16kHz 기준)
-    valid_ms = [10, 20, 30]
-    valid_samples = [detector.RATE // 100, detector.RATE // 50, detector.RATE // 33]
-    
-    print("VAD 유효 프레임 크기:")
-    for ms, samples in zip(valid_ms, valid_samples):
-        print(f"- {ms}ms = {samples} 샘플")
-    
-    # 현재 설정이 유효한지 확인
-    if chunk_samples in valid_samples:
-        print(f"\n현재 청크 크기 {chunk_samples}는 VAD에 유효합니다.")
-    else:
-        print(f"\n경고: 현재 청크 크기 {chunk_samples}는 VAD에 유효하지 않을 수 있습니다.")
-        print("VAD는 10ms, 20ms, 30ms 프레임 길이만 지원합니다.")
      
     # 스트림 초기화 (기본 마이크 사용)
     detector.initialize_stream()

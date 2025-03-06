@@ -7,10 +7,10 @@ from PIL import Image
 from IPython.display import display
 
 from IPython.display import display
-print( f"opencv version : {cv2.__version__}")
+print( f"opencv version : {cv.__version__}")
 
 #%%
-url = f'rtsp://admin:123456789a@192.168.4.100:554/ch01/0' # fxt
+url = f'rtsp://210.99.70.120:1935/live/cctv050.stream' # fxt
 
 #%%
 cap = cv.VideoCapture(url)

@@ -43,7 +43,7 @@ class VoiceDetectorApp:
         self.font_family = self.font_manager.font_family
         
         # VoiceDetector 초기화
-        self.detector = VoiceDetector(debug_mode=False)
+        self.detector = VoiceDetector(debug_mode=True)
         
         # 감지 모드 변수 초기화 (detector의 값으로)
         self.use_rms = tk.BooleanVar(value=self.detector.use_rms)
