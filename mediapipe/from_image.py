@@ -56,10 +56,11 @@ height, width = image.shape[:2]
 output_image = image.copy()
 
 # 첫 번째 얼굴의 모든 랜드마크에 대해 좌표 계산 후 그리기
-for landmark in result.face_landmarks[0]:
+for index,landmark in enumerate(result.face_landmarks[0]):
     x = int(landmark.x * width)
     y = int(landmark.y * height)
     cv2.circle(output_image, (x, y), radius=2, color=(0, 255, 0), thickness=-1)
+    print(f"랜드마크 좌표: {index} : ({x}, {y})")
 display(Image.fromarray(cv2.cvtColor(output_image, cv2.COLOR_BGR2RGB)))
 
 
