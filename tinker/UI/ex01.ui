@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.4" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings />
+    <customwidgets />
+  </project>
+  <object class="tk.Tk" id="root" named="True">
+    <property name="height">200</property>
+    <property name="minsize">640|480</property>
+    <property name="title" translatable="yes">Ex01 UI Sample</property>
+    <property name="width">200</property>
+    <child>
+      <object class="ttk.Frame" id="Top" named="True">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="InfoLabel" named="True">
+            <property name="text" translatable="yes">Hello Tk</property>
+            <layout manager="pack">
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="Body" named="True">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="ipadx">0</property>
+          <property name="ipady">0</property>
+          <property name="pady">32</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Button" id="btnHi" named="True">
+            <property name="text" translatable="yes">button Hi</property>
+            <bind sequence="&lt;ButtonPress&gt;" handler="callback_hi" add="" />
+            <layout manager="pack">
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="btnHello" named="True">
+            <property name="text" translatable="yes">Hello</property>
+            <bind sequence="&lt;ButtonPress&gt;" handler="callback_hello" add="" />
+            <layout manager="pack">
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="button3">
+            <property name="text" translatable="yes">button3</property>
+            <layout manager="pack">
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

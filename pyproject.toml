@@ -1,0 +1,11 @@
+[project]
+name = "python-study"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pygubu>=0.38.2",
+    "pygubu-designer[all]>=0.41.4",
+    "tkinterweb<4",
+]
