@@ -2,7 +2,10 @@
 import sys
 import numpy as np 
 
-print(sys.version)
+
+print(f"python version : {sys.version}")
+print(f"numpy version : {np.__version__}")
+
 
 #%%
 a = np.empty(0)

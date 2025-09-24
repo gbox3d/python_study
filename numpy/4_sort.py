@@ -33,14 +33,13 @@ x1 = np.array([
 
 print(x1)
 #첫번째 열을 일차원 배열로 만들기
-
 print(x1[:,0])
-# 첫번째 열기준 정렬
-print("sort index : " , x1[:,0].argsort())
 
-#%%
-sort_indices = x1[:,0].argsort()
-print( x1[:,0][sort_indices] )
+_x1_sorted_index = x1[:,0].argsort() # 첫번째 열 기준 정렬된 인덱스 구하기
+print("sorted index : " , _x1_sorted_index)
+
+print(x1[_x1_sorted_index]) # 첫번째 열기준 정렬된 결과
+
 
 #%%
 # 2번째 열기준 정렬

@@ -9,21 +9,10 @@
 # %%
 import numpy as np
 
+#%%
 _test_np = np.array([1,2,3,4,5,6])
-
-#print( [_test_np  for _contour in contours if cv.contourArea(_contour) > 1000 ]
-
-# %% [markdown]
-# 
-# 전체 데티어 덤프하기  
-# 
-
-# %%
-print( [value  for value in _test_np ])
-
-# %%
-# 나머지가 0이 아닌 값만 골라내기
-print( [_v for _v in _test_np if _v %2])
+print( [value  for value in _test_np ]) #모두 출력
+print( [_v for _v in _test_np if _v %2]) #홀수만 리스트로 출력
 
 
 # %%
