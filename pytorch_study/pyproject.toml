@@ -1,0 +1,18 @@
+[project]
+name = "pytorch-study"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "ipykernel>=6.30.1",
+]
+
+# 인덱스 정의: explicit=true 로 "지정한 패키지에만" 사용
+[[tool.uv.index]]
+name = "pytorch-cu129"
+url = "https://download.pytorch.org/whl/cu129"
+explicit = true
