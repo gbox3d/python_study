@@ -1,0 +1,13 @@
+[project]
+name = "tinker-tutorial"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "opencv-contrib-python>=4.12.0.88",
+    "pillow>=11.3.0",
+    "pygubu>=0.38.2",
+    "pygubu-designer>=0.41.4",
+    "python-dotenv>=1.1.1",
+]
