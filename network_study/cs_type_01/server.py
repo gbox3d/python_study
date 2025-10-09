@@ -1,6 +1,6 @@
 #############################
 ## filename : server.py
-## 설명 : 간단한 TCP 서버 예제 (비동기, asyncio)
+## 설명 : TCP Agent 중계 Server
 ## 작성자 : gbox3d
 ## 위 주석은 수정하지 마세요.
 #############################
@@ -11,36 +11,28 @@ import json
 import time
 from typing import Optional
 
+import itertools
+
+from protocol import ServerProtocol,ClientProtocol
+
 class Server:
-    # 상태코드
-    SUCCESS = 0
-    ERR_CHECKCODE_MISMATCH = 1
-    ERR_INVALID_DATA = 2
-    ERR_INVALID_REQUEST = 3
-    ERR_INVALID_PARAMETER = 4
-    ERR_INVALID_FORMAT = 5
-    ERR_UNKNOWN_CODE = 8
-    ERR_EXCEPTION = 9
-    ERR_TIMEOUT = 10
-
-    __VERSION__ = "1.0.2"
-
-    # 보호 상수
-    MAX_PAYLOAD_BYTES = 16 * 1024 * 1024   # 16MB
-    MAX_HEADER_TIMEOUTS = 3                # 헤더 연속 타임아웃 상한
+    
+    __VERSION__ = "0.0.1"
 
     def __init__(self,
                  host: Optional[str] = None,
                  port: Optional[int] = None,
-                 timeout: Optional[int] = None,
-                 checkcode: Optional[int] = None):
+                 timeout: Optional[int] = None):
         self.host = host if host is not None else "localhost"
         self.port = port if port is not None else 8282
         self.timeout = timeout if timeout is not None else 10  # 초
-        self.checkcode = checkcode if checkcode is not None else 20251004
+
+        self.checkcode = ServerProtocol.checkcode
 
         print(f"Server version {self.__VERSION__}")
         print(f"Listening on {self.host}:{self.port}, timeout={self.timeout}s, checkcode={self.checkcode}")
+
+        self._id_counter = itertools.count(1)  # 1,2,3,... 중복 없는 ID
 
     async def _read_exactly(self, reader: asyncio.StreamReader, n: int) -> bytes:
         return await asyncio.wait_for(reader.readexactly(n), timeout=self.timeout)
@@ -51,19 +43,22 @@ class Server:
         print(f"[INFO] 연결: {addr}")
 
         # ✅ 연결별 상태
-        write_lock = asyncio.Lock()
-        push_task: Optional[asyncio.Task] = None
-
-        async def send_packet(payload: bytes):
-            # 동시 write 경합을 방지
-            async with write_lock:
-                writer.write(payload)
-                await writer.drain()
-
-        async def send_status(req: int, status: int):
-            await send_packet(struct.pack("!IIB", self.checkcode, req, status))
+        write_lock = asyncio.Lock()  # per-connection write lock
 
         try:
+
+            await asyncio.sleep(0.5)  # 클라이언트가 준비할 시간
+
+            conn_id = next(self._id_counter)
+            # 최초 환영 메시지 전송
+            _welcome_obj = {
+                "cmd": "welcome",
+                "version": self.__VERSION__,
+                "server_time": int(time.time()),
+                "id" : conn_id
+            }
+            await ServerProtocol.send_json(writer, ServerProtocol.PUSH_JSON, _welcome_obj, write_lock)  
+
             while True:
                 # 8바이트: checkcode(uint32 BE) + request_code(uint32 BE)
                 try:
@@ -72,44 +67,52 @@ class Server:
                     header_timeouts = 0
                 except asyncio.TimeoutError:
                     header_timeouts += 1
-                    print(f"[WARN] TIMEOUT waiting header ({header_timeouts}/{self.MAX_HEADER_TIMEOUTS}) from {addr}")
-                    if header_timeouts >= self.MAX_HEADER_TIMEOUTS:
-                        await send_status(0, self.ERR_TIMEOUT)
+                    print(f"[WARN] TIMEOUT waiting header ({header_timeouts}/{ServerProtocol.MAX_HEADER_TIMEOUTS}) from {addr}")
+                    
+                    if header_timeouts >= ServerProtocol.MAX_HEADER_TIMEOUTS:
                         break
+
+                    await ServerProtocol.send_push_alert(writer, ServerProtocol.WARN_TIMEOUT, write_lock)
                     continue
 
                 if checkcode != self.checkcode:
                     print(f"[WARN] CHECKCODE mismatch: recv={checkcode}, expected={self.checkcode}")
-                    await send_status(request_code, self.ERR_CHECKCODE_MISMATCH)
+                    await ServerProtocol.send_ack(writer, request_code, ServerProtocol.ERR_CHECKCODE_MISMATCH, write_lock)
                     break
 
-                if request_code == 99:  # ping
-                    await send_status(request_code, self.SUCCESS)
+                # --------------------
+                # 99: ping
+                # --------------------
+                if request_code == ServerProtocol.REQ_PING:
+                    print(f"[INFO] PING from {addr}")
+                    # 단순 ACK 응답
+                    await ServerProtocol.send_ack(writer, request_code, ServerProtocol.SUCCESS, write_lock)
                     continue
 
-                if request_code == 0x01:  # json string data (size(uint32) + data)
+                # --------------------
+                # 0x01: 제어 JSON 
+                # --------------------
+                elif request_code == ServerProtocol.REQ_JSON:
                     try:
                         size_bytes = await self._read_exactly(reader, 4)
                         (size,) = struct.unpack("!I", size_bytes)
                     except asyncio.TimeoutError:
                         print(f"[WARN] TIMEOUT while reading size from {addr}")
-                        await send_status(request_code, self.ERR_TIMEOUT)
+                        await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_TIMEOUT, write_lock)
                         break
 
-                    if size > self.MAX_PAYLOAD_BYTES:
-                        print(f"[WARN] payload too large: {size} > {self.MAX_PAYLOAD_BYTES}")
-                        await send_status(request_code, self.ERR_INVALID_DATA)
+                    if size > ServerProtocol.MAX_PAYLOAD_BYTES:
+                        print(f"[WARN] payload too large: {size} > {ServerProtocol.MAX_PAYLOAD_BYTES}")
+                        await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_INVALID_DATA, write_lock)
                         break
 
                     try:
                         data = await self._read_exactly(reader, size) if size > 0 else b""
-                        
                     except asyncio.TimeoutError:
                         print(f"[WARN] TIMEOUT while reading body({size}B) from {addr}")
-                        await send_status(request_code, self.ERR_TIMEOUT)
+                        await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_TIMEOUT, write_lock)
                         break
 
-                    # JSON 파싱 및 명령 처리
                     try:
                         print(f"[DEBUG] JSON data from {addr}: {data[:128].decode('utf-8', errors='ignore')}...")
                         obj = json.loads(data.decode('utf-8'))
@@ -117,75 +120,62 @@ class Server:
                             raise ValueError("JSON root must be object")
 
                         msg = str(obj.get("msg", "")).lower()
-                        if msg == "start":
-                            # 이미 돌고 있으면 재시작(취소 후 새로 시작)
-                            if push_task and not push_task.done():
-                                push_task.cancel()
-                                try:
-                                    await push_task
-                                except asyncio.CancelledError:
-                                    pass
-                            push_task = asyncio.create_task(self.send_timepush(writer, write_lock))
-                        elif msg == "stop":
-                            if push_task and not push_task.done():
-                                push_task.cancel()
-                                try:
-                                    await push_task
-                                except asyncio.CancelledError:
-                                    pass
-                                push_task = None
+                        
+                        if msg == "push":
+                            # 필요 시 확장 포인트
+                            pass
+                        elif msg == "pull":
+                            # 필요 시 확장 포인트
+                            pass
                         else:
-                            # 알 수 없는 msg 키
-                            await send_status(request_code, self.ERR_INVALID_PARAMETER)
+                            await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_UNKNOWN_CODE, write_lock)
+                            print(f"[WARN] unknown msg: {msg} from {addr}")
                             continue
 
                     except Exception:
-                        await send_status(request_code, self.ERR_INVALID_FORMAT)
+                        await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_INVALID_FORMAT, write_lock)
                         continue
 
-                    await send_status(request_code, self.SUCCESS)
-                    continue
+                    await ServerProtocol.send_ack(writer, request_code, ServerProtocol.SUCCESS, write_lock)
 
-                if request_code == 0x02:
-                    # 👇 클라이언트 ACK 수신 (status 1B)
+                # --------------------
+                # 0x02: ACK (클라이언트->서버)
+                # --------------------
+                elif request_code == ClientProtocol.REQ_ACK:
                     try:
-                        status_bytes = await self._read_exactly(reader, 1)
-                        (ack_status,) = struct.unpack("!B", status_bytes)
-                        # 필요하면 통계/모니터링: ack_status 수집
-                        print(f"[INFO] push ACK from {addr}: status={ack_status}")
+                        status_bytes = await self._read_exactly(reader, 5)
+                        req_code, ack_status = struct.unpack("!IB", status_bytes)
+                        print(f"[INFO] push ACK from {addr}: status={ack_status} for req_code={req_code}")
                     except asyncio.TimeoutError:
                         print(f"[WARN] TIMEOUT while reading push ACK from {addr}")
-                        # ACK 실패는 치명적이지 않으므로 계속 루프
                         continue
                     except Exception as e:
                         print(f"[WARN] push ACK read error: {e}")
                         continue
-                    # ACK에 대한 서버의 재응답은 없음(루프 방지)
                     continue
 
+                # --------------------
                 # 알 수 없는 요청
-                print(f"[WARN] unknown request: {request_code} from {addr}")
-                await send_status(request_code, self.ERR_UNKNOWN_CODE)
+                # --------------------
+                else:
+                    print(f"[WARN] unknown request: {request_code} from {addr}")
+                    await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_UNKNOWN_CODE, write_lock)
 
         except asyncio.IncompleteReadError:
             print(f"[INFO] EOF: {addr}")
         except asyncio.TimeoutError:
             print(f"[WARN] TIMEOUT: {addr}")
+            try:
+                await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_TIMEOUT, write_lock)
+            except Exception:
+                print(f"[WARN] Failed to send TIMEOUT status to {addr}")
         except Exception as e:
             print(f"[ERROR] 예외: {e}")
             try:
-                await send_status(0, self.ERR_EXCEPTION)
+                await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_EXCEPTION, write_lock)
             except Exception:
-                pass
+                print(f"[WARN] Failed to send EXCEPTION status to {addr}")
         finally:
-            # ✅ 연결 종료 시 푸시 태스크 정리
-            if push_task and not push_task.done():
-                push_task.cancel()
-                try:
-                    await push_task
-                except asyncio.CancelledError:
-                    pass
-
             writer.close()
             try:
                 await writer.wait_closed()
@@ -193,27 +183,7 @@ class Server:
                 pass
             print(f"[INFO] 종료: {addr}")
 
-    async def send_timepush(self, writer: asyncio.StreamWriter, write_lock: asyncio.Lock):
-        """5초마다 epoch time을 JSON으로 s->c 푸시 (req_code = 0x02)"""
-        try:
-            while True:
-                now = int(time.time())  # ✅ wall-clock epoch(sec)
-                obj = {"time": now}
-                body = json.dumps(obj, ensure_ascii=False).encode("utf-8")
-                header = struct.pack("!II", self.checkcode, 0x02)  # s->c push
-                size   = struct.pack("!I", len(body))
-                payload = header + size + body
-
-                async with write_lock:
-                    writer.write(payload)
-                    await writer.drain()
-
-                await asyncio.sleep(5)
-        except asyncio.CancelledError:
-            # 정상 취소 경로: 조용히 종료
-            raise
-        except Exception as e:
-            print(f"[ERROR] Time push error: {e}")
+    
 
     async def run(self):
         server = await asyncio.start_server(self.handle_client, self.host, self.port)
