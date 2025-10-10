@@ -1,19 +1,23 @@
-#%% asyncio TCP client test app (ACK for REQ_PUSH)
+#######################################
+# filename: client.py
+# author: gbox3d
+# 위 주석은 수정하지 마시오
+#######################################
+
 import asyncio
 import json
 import struct
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
+from pathlib import Path
+import time
+from typing import Dict, Optional, Union, Callable   # ← Callable 추가
+from protocol import ServerProtocol,ClientProtocol
 
-CHECKCODE = 20251004
-REQ_PING  = 99
-REQ_JSON  = 0x01
-REQ_PUSH  = 0x02  # s->c push , c->s ACK
+from collections import defaultdict
 
-DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = 8282
-
-class TestClientApp:
-    def __init__(self, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT, checkcode: int = CHECKCODE, timeout: float = 15.0):
+class Client:
+    def __init__(self, host: str, port: int,
+                 checkcode:int = ServerProtocol.checkcode, timeout: float = 15.0):
         self.host = host
         self.port = port
         self.checkcode = checkcode
@@ -22,19 +26,44 @@ class TestClientApp:
         self.reader: Optional[asyncio.StreamReader] = None
         self.writer: Optional[asyncio.StreamWriter] = None
 
-        self.waiters: Dict[int, asyncio.Queue] = {
-            REQ_PING: asyncio.Queue(),
-            REQ_JSON: asyncio.Queue(),
-        }
-
         self._recv_task: Optional[asyncio.Task] = None
-        self._write_lock = asyncio.Lock()  # 👈 동시 write 보호
+        self._write_lock = asyncio.Lock()   # 동시 write 보호
         self._closed = False
 
-    async def start(self):
-        self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
-        print(f"[CLIENT] connected -> {self.host}:{self.port}")
-        self._recv_task = asyncio.create_task(self._recv_loop())
+        self.waiters: dict[int, asyncio.Queue] = defaultdict(asyncio.Queue)
+        
+        self.on_connection_start: Optional[Callable[[str], None]] = None  # ← 추가
+        self.on_connection_lost: Optional[Callable[[str], None]] = None  # ← 추가
+
+        
+
+    def _notify_connect(self, json_info: dict):
+        cb = self.on_connection_start
+        if cb:
+            try:
+                cb(json_info)  # UI 쪽에서 after로 래핑하여 안전 처리
+            except Exception as e:
+                print(f"[CLIENT][WARN] on_connection_start callback error: {e}")    
+
+    def _notify_disconnect(self, reason: str):
+        cb = self.on_connection_lost
+        if cb:
+            try:
+                cb(reason)  # UI 쪽에서 after로 래핑하여 안전 처리
+            except Exception as e:
+                print(f"[CLIENT][WARN] on_connection_lost callback error: {e}")
+
+    async def start(self) -> bool:
+        try:
+            self.reader, self.writer = await asyncio.open_connection(self.host, self.port) # 연결 시도
+            print(f"[CLIENT] connected -> {self.host}:{self.port}")
+            self._recv_task = asyncio.create_task(self._recv_loop()) # 수신 루프 시작
+
+            return True
+
+        except Exception as e:
+            print(f"[CLIENT] failed to connect: {str(e)}")
+            raise ConnectionError(f"failed to connect to {self.host}:{self.port}") from e
 
     async def stop(self):
         if self._closed:
@@ -57,115 +86,149 @@ class TestClientApp:
     async def _read_exactly(self, n: int) -> bytes:
         assert self.reader is not None
         return await asyncio.wait_for(self.reader.readexactly(n), timeout=self.timeout)
+    
+    # ---------- 기본 요청 ----------
+    async def send_ping(self) -> bool:
+        header = struct.pack("!II", self.checkcode, ServerProtocol.REQ_PING)
+        await ServerProtocol.send_packet(self.writer, header, self._write_lock)
+        
+        # 응답은 _recv_loop가 받아서 큐에 넣어줌
 
-    async def _sendall(self, data: bytes):
-        assert self.writer is not None
-        async with self._write_lock:
-            self.writer.write(data)
-            await self.writer.drain()
+        status = await asyncio.wait_for(
+            self.waiters[ServerProtocol.REQ_PING].get(),
+            timeout=self.timeout
+        )
+        return status == ServerProtocol.SUCCESS
+  
+    async def send_save_msg(self, msg: str) -> bool:
 
-    async def send_ping(self) -> int:
-        header = struct.pack("!II", self.checkcode, REQ_PING)
-        await self._sendall(header)
-        status = await asyncio.wait_for(self.waiters[REQ_PING].get(), timeout=self.timeout)
-        return status
+        req_obj = {
+            "cmd": "save_msg",
+            "msg": msg,
+            "timestamp": int(time.time())
+        }
 
-    async def send_json(self, obj: dict) -> int:
-        body = json.dumps(obj, ensure_ascii=False).encode("utf-8")
-        header = struct.pack("!II", self.checkcode, REQ_JSON)
-        size   = struct.pack("!I", len(body))
-        await self._sendall(header + size + body)
-        status = await asyncio.wait_for(self.waiters[REQ_JSON].get(), timeout=self.timeout)
-        return status
+        await ServerProtocol.send_json(self.writer, ServerProtocol.REQ_JSON, req_obj, self._write_lock)
 
-    async def send_push_ack(self, status: int = 0):
-        """REQ_PUSH(0x02)에 대한 ACK 전송: header + status(1B)"""
-        pkt = struct.pack("!IIB", self.checkcode, REQ_PUSH, status)
-        await self._sendall(pkt)
+        status = await asyncio.wait_for(
+            self.waiters[ServerProtocol.REQ_JSON].get(),
+            timeout=self.timeout
+        )
+        return status == ServerProtocol.SUCCESS
+    
+    async def send_load_msg(self) -> Optional[str]:
 
+        req_obj = {
+            "cmd": "load_msg",
+            "timestamp": int(time.time())
+        }
+
+        await ServerProtocol.send_json(self.writer, ServerProtocol.REQ_JSON, req_obj, self._write_lock)
+
+        strMsg = await asyncio.wait_for(
+            self.waiters[ServerProtocol.PUSH_JSON].get(),
+            timeout=self.timeout
+        )
+
+        return strMsg if strMsg else None
+        
+    async def send_clear_msg(self) -> bool:
+
+        req_obj = {
+            "cmd": "clear_msg",
+            "timestamp": int(time.time())
+        }
+
+        await ServerProtocol.send_json(self.writer, ServerProtocol.REQ_JSON, req_obj, self._write_lock)
+
+        status = await asyncio.wait_for(
+            self.waiters[ServerProtocol.REQ_JSON].get(),
+            timeout=self.timeout
+        )
+        return status == ServerProtocol.SUCCESS
+
+    # ---------- 수신 루프 ----------
     async def _recv_loop(self):
         try:
             while True:
-                header = await self._read_exactly(8)
-                r_check, r_req = struct.unpack("!II", header)
+                try:
+                    header = await self._read_exactly(8)
+                except asyncio.TimeoutError:
+                    print("[CLIENT][WARN] recv timeout"); continue
 
+                r_check, r_req = struct.unpack("!II", header)
                 if r_check != self.checkcode:
                     print(f"[CLIENT][WARN] checkcode mismatch: got={r_check}, expected={self.checkcode}")
                     return
+                
+                print(f"[CLIENT] recv: req={r_req}")
 
-                if r_req == REQ_PUSH:
-                    # s->c push: size + body(JSON)
-                    size_bytes = await self._read_exactly(4)
-                    (size,) = struct.unpack("!I", size_bytes)
-                    body = await self._read_exactly(size) if size > 0 else b""
+                if r_req == ServerProtocol.PUSH_JSON:
+                    size = struct.unpack("!I", await self._read_exactly(4))[0]
+                    body = await self._read_exactly(size) if size>0 else b""
                     try:
-                        msg = json.loads(body.decode("utf-8"))
+                        obj_data = json.loads(body.decode("utf-8"))
                     except Exception:
-                        msg = {"raw": body[:128].hex()}
-                    print(f"[PUSH] {msg}")
+                        obj_data = {"raw": body[:128].hex()}
 
-                    # 👇 즉시 ACK 전송 (status=0: SUCCESS)
+                    print(f"[PUSH JSON] {obj_data}")
+
+                    if "cmd" in obj_data :
+                        if obj_data["cmd"] == "welcome":
+                            self._notify_connect(obj_data)
+                        elif obj_data["cmd"] == "load_msg":
+                            q = self.waiters.get(ServerProtocol.PUSH_JSON)
+                            if q:
+
+                                msg = obj_data.get("msg","")
+                                self.waiters[ServerProtocol.PUSH_JSON].put_nowait(msg)
+                                continue
+                            else:
+                                print(f"[CLIENT][INFO] PUSH_JSON for load_msg (no waiter)")
+
+                    # 즉시 ACK
                     try:
-                        await self.send_push_ack(status=0)
+                        await ClientProtocol.send_ack(
+                            writer=self.writer,
+                            checkcode=self.checkcode,
+                            req_code=ServerProtocol.PUSH_JSON,
+                            status=ServerProtocol.SUCCESS,
+                            lock=self._write_lock
+                        )
                     except Exception as e:
                         print(f"[CLIENT][ERROR] push-ack send failed: {e}")
                     continue
 
-                else:
-                    # status only (1바이트)
-                    status_bytes = await self._read_exactly(1)
-                    (status,) = struct.unpack("!B", status_bytes)
-                    q = self.waiters.get(r_req)
-                    if q is not None:
+                elif r_req == ServerProtocol.REQ_ACK:
+
+                    code_bytes = await self._read_exactly(16)  # req_code(4) + status(1) + reserved(11)
+                    (_res_code,status) = struct.unpack("!IB", code_bytes[:5])
+                    
+                    q = self.waiters.get(_res_code)
+                    if q:
                         q.put_nowait(status)
                     else:
-                        print(f"[CLIENT][INFO] resp for req={r_req}, status={status}")
+                        print(f"[CLIENT][INFO] ACK for res_code={_res_code}, status={status} (no waiter)")
+                        continue
+                elif r_req == ServerProtocol.PUSH_ALERT:
+
+                    body = await self._read_exactly(16)  # alert_code(1) + reserved(15)
+                    (status,) = struct.unpack("!B", body[:1])
+
+                    print(f"[CLIENT][ALERT] server alert: code={status}")
                     continue
+                elif r_req == ServerProtocol.PUSH_STATUS:
+                    body = await self._read_exactly(16)  # status_code(1) + reserved(15)
+                    (status,) = struct.unpack("!B", body[:1])
+                    print(f"[CLIENT][STATUS] server status update: code={status}")
+                    continue
+                else:
+                    print(f"[CLIENT][WARN] unknown req code: {r_req}")
 
         except asyncio.IncompleteReadError:
             print("[CLIENT][INFO] server closed connection")
+            self._notify_disconnect("서버와의 연결이 끊어졌습니다.")
         except asyncio.CancelledError:
             pass
         except Exception as e:
             print(f"[CLIENT][ERROR] recv_loop: {e}")
-
-# 이하 REPL/메인 루프는 동일 (생략 가능)
-async def ainput(prompt: str = "") -> str:
-    return await asyncio.to_thread(input, prompt)
-
-async def repl(app: TestClientApp):
-    print("Commands: ping | start | stop | json {..} | help | quit")
-    while True:
-        cmdline = (await ainput("> ")).strip()
-        if not cmdline: 
-            continue
-        if cmdline.lower() in ("quit","q","exit"): break
-        if cmdline.lower() == "help":
-            print("ping | start | stop | json {..} | quit"); continue
-        if cmdline.lower() == "ping":
-            print("[CMD][ping] status=", await app.send_ping()); continue
-        if cmdline.lower() == "start":
-            print("[CMD][start] status=", await app.send_json({"msg":"start"})); continue
-        if cmdline.lower() == "stop":
-            print("[CMD][stop] status=", await app.send_json({"msg":"stop"})); continue
-        if cmdline.lower().startswith("json"):
-            _, *rest = cmdline.split(" ", 1)
-            raw = rest[0] if rest else "{}"
-            try: obj = json.loads(raw)
-            except Exception as e: print("[CMD][json] invalid:", e); continue
-            print("[CMD][json] status=", await app.send_json(obj)); continue
-        print(f"[REPL] unknown command: {cmdline}")
-
-async def main():
-    app = TestClientApp(DEFAULT_HOST, DEFAULT_PORT, CHECKCODE)
-    try:
-        await app.start()
-        await repl(app)
-    finally:
-        await app.stop()
-
-if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\n[CLIENT] KeyboardInterrupt")

@@ -60,11 +60,14 @@ class ServerProtocol:
     @classmethod
     async def send_ack(cls, writer: asyncio.StreamWriter, req_code: int, status: int,
                        lock: Optional[asyncio.Lock] = None) -> None:
+        
         # header: checkcode + REQ_ACK
-        pkt_header = struct.pack("!II", cls.checkcode, cls.REQ_ACK)
-        # body: req_code(4) + status(1)
+        pkt_header = struct.pack("!II", cls.checkcode, cls.REQ_ACK) # header (8 bytes)
+
+        # body: req_code(4) + status(1) + reserved(11) = 16 bytes # body (16 bytes)
         body = struct.pack("!IB", req_code, status)
-        await cls.send_packet(writer, pkt_header + body, lock)
+        body += b'\x00' * 11 # reserved
+        await cls.send_packet(writer, pkt_header + body, lock) # total 24 bytes
 
     @classmethod
     async def send_push_status(cls, writer: asyncio.StreamWriter, status: int,
@@ -73,7 +76,7 @@ class ServerProtocol:
         pkt_header = struct.pack("!II", cls.checkcode, cls.PUSH_STATUS)
         # body: status(1) + reserved(15)
         body = struct.pack("!B15s", status, b'\x00' * 15)
-        await cls.send_packet(writer, pkt_header + body, lock)
+        await cls.send_packet(writer, pkt_header + body, lock) # total 24 bytes
 
     @classmethod
     async def send_push_alert(cls, writer: asyncio.StreamWriter, alert_code: int,
@@ -82,7 +85,7 @@ class ServerProtocol:
         pkt_header = struct.pack("!II", cls.checkcode, cls.PUSH_ALERT)
         # body: alert_code(1) + reserved(15)
         body = struct.pack("!B15s", alert_code, b'\x00' * 15)
-        await cls.send_packet(writer, pkt_header + body, lock)
+        await cls.send_packet(writer, pkt_header + body, lock) # total 24 bytes
 
     # -------- JSON (header + size + body) --------
     @classmethod

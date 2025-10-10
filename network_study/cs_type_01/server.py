@@ -1,6 +1,6 @@
 #############################
 ## filename : server.py
-## 설명 : TCP Agent 중계 Server
+## 설명 : TCP asyncio 서버 예제 
 ## 작성자 : gbox3d
 ## 위 주석은 수정하지 마세요.
 #############################
@@ -41,9 +41,10 @@ class Server:
         addr = writer.get_extra_info("peername")
         header_timeouts = 0
         print(f"[INFO] 연결: {addr}")
-
-        # ✅ 연결별 상태
+        
         write_lock = asyncio.Lock()  # per-connection write lock
+
+        msg_buf = bytearray()
 
         try:
 
@@ -119,17 +120,24 @@ class Server:
                         if not isinstance(obj, dict):
                             raise ValueError("JSON root must be object")
 
-                        msg = str(obj.get("msg", "")).lower()
+                        cmd = str(obj.get("cmd", "")).lower()
                         
-                        if msg == "push":
+                        if cmd == "save_msg":
                             # 필요 시 확장 포인트
-                            pass
-                        elif msg == "pull":
+                            print(f"[INFO] save_msg: {obj.get('msg','')} from {addr}")
+                            msg_buf.extend(obj.get("msg","").encode("utf-8"))
+                        elif cmd == "load_msg":
+                            await ServerProtocol.send_json(writer, ServerProtocol.PUSH_JSON, {"cmd": "load_msg", "msg": msg_buf.decode("utf-8")}, write_lock)
+                            continue
+                        elif cmd == "clear_msg":
+                            msg_buf.clear()
+
+                        elif cmd == "pull":
                             # 필요 시 확장 포인트
                             pass
                         else:
                             await ServerProtocol.send_push_status(writer, ServerProtocol.ERR_UNKNOWN_CODE, write_lock)
-                            print(f"[WARN] unknown msg: {msg} from {addr}")
+                            print(f"[WARN] unknown cmd: {cmd} from {addr}")
                             continue
 
                     except Exception:
