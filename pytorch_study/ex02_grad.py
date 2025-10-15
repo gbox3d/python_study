@@ -1,12 +1,42 @@
 #%%
 import torch
-# The autograd package provides automatic differentiation 
-# for all operations on Tensors
+# 미분 (gradient) 계산
 
 #%%
-# requires_grad = True -> tracks all operations on the tensor. 
+# 1. 'x = 2' 라는 지점에서 변화량을 추적하겠다고 설정
+#    숫자 뒤에 .0을 붙여 소수점(float)으로 만들어야 기울기 계산이 가능합니다.
+x = torch.tensor(2.0, requires_grad=True)
+
+# 2. 간단한 연산 수행
+#    수식: z = 3 * x²
+y = x ** 2
+z = y * 3
+
+# 3. 'z'를 'x'에 대해 미분하라는 명령
+z.backward()
+
+# 4. 결과 확인
+print(f"최종 결과 z: {z}")
+print(f"x=2일 때, z를 x로 미분한 값 (x.grad): {x.grad}")
+
+
+#%%
+# 
 x = torch.randn(3, requires_grad=True)
 y = x + 2
+z = y * y * 3
+
+z = z.mean()
+
+print(x)
+print(y)
+print(z)
+
+#%%
+z.backward()
+print(x.grad) # dz/dx
+
+#%%
 
 # y was created as a result of an operation, so it has a grad_fn attribute.
 # grad_fn: references a Function that has created the Tensor

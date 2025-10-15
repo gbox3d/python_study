@@ -1,12 +1,9 @@
 #%% 텐서 기초 
-import cv2
+# import cv2
 import torch
 import numpy as np
-from torch._C import device
-import torchvision
-import torch.backends.cudnn as cudnn
 
-print(f' cv version : {cv2.__version__}')
+# print(f' cv version : {cv2.__version__}')
 print(f' torch version : {torch.__version__}')
 
 #%%
