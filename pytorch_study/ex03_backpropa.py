@@ -29,6 +29,3 @@ print(w)
 # don't forget to zero the gradients
 w.grad.zero_()
 
-
-# next forward and backward pass...
-# %%

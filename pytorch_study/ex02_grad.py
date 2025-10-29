@@ -1,5 +1,6 @@
 #%%
 import torch
+
 # 미분 (gradient) 계산
 
 #%%
@@ -22,15 +23,18 @@ print(f"x=2일 때, z를 x로 미분한 값 (x.grad): {x.grad}")
 
 #%%
 # 
-x = torch.randn(3, requires_grad=True)
+# 1) requires_grad=True 로 설정
+x = torch.randn(10, requires_grad=True)
+
+# 2) 기본 연산들
 y = x + 2
 z = y * y * 3
-
 z = z.mean()
 
-print(x)
-print(y)
-print(z)
+# 확인용 출력
+print("x =", x)
+print("y =", y)
+print("z =", z)
 
 #%%
 z.backward()
