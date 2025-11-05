@@ -1,61 +1,84 @@
-# 1) Design model (input, output, forward pass with different layers)
-# 2) Construct loss and optimizer
-# 3) Training loop
-#       - Forward = compute prediction and loss
-#       - Backward = compute gradients
-#       - Update weights
-#%%
+# %%
 import torch
 import torch.nn as nn
+import matplotlib.pyplot as plt
 
-# Linear regression
-# f = w * x 
-
-# here : f = 2 * x
-
-# 0) Training samples
+# ------------------------------
+# 0) 데이터 준비
+# ------------------------------
 X = torch.tensor([1, 2, 3, 4], dtype=torch.float32)
 Y = torch.tensor([2, 4, 6, 8], dtype=torch.float32)
 
-# 1) Design Model: Weights to optimize and forward function
-w = torch.tensor(0.0, dtype=torch.float32, requires_grad=True)
-
-def forward(x):
+# ------------------------------
+# 1) forward 함수 정의 (교수님 버전)
+# ------------------------------
+def forward(x, w):
     return w * x
 
-print(f'Prediction before training: f(5) = {forward(5).item():.3f}')
+# ------------------------------
+# 2) 학습 함수 (옵티마이저별)
+# ------------------------------
+def train_with_optimizer(optimizer_name, learning_rate=0.01, n_iters=100):
+    # 가중치 초기화
+    w = torch.tensor(0.0, dtype=torch.float32, requires_grad=True)
+    loss_fn = nn.MSELoss()
 
-# 2) Define loss and optimizer
-learning_rate = 0.01
-n_iters = 100
+    # 옵티마이저 선택
+    if optimizer_name == "sgd":
+        optimizer = torch.optim.SGD([w], lr=learning_rate)
+    elif optimizer_name == "momentum":
+        optimizer = torch.optim.SGD([w], lr=learning_rate, momentum=0.9)
+    elif optimizer_name == "adam":
+        optimizer = torch.optim.Adam([w], lr=learning_rate)
+    else:
+        raise ValueError("unknown optimizer")
 
-# callable function
-loss = nn.MSELoss()
+    losses = []
 
-optimizer = torch.optim.SGD([w], lr=learning_rate)
+    # ------------------------------
+    # 3) 학습 루프
+    # ------------------------------
+    for epoch in range(n_iters):
+        # forward pass
+        y_pred = forward(X, w)
+
+        # loss 계산
+        loss = loss_fn(Y, y_pred)
+
+        # backward pass
+        optimizer.zero_grad()
+        loss.backward()
+
+        # update
+        optimizer.step()
+
+        losses.append(loss.item())
+
+    return w.item(), losses
 
 #%%
-# 3) Training loop
-for epoch in range(n_iters):
-    # predict = forward pass
-    y_predicted = forward(X)
+# ------------------------------
+# 4) 세 가지 옵티마이저로 학습
+# ------------------------------
+results = {}
+for name in ["sgd", "momentum", "adam"]:
+    final_w, losses = train_with_optimizer(name, learning_rate=0.01, n_iters=100)
+    results[name] = (final_w, losses)
+    print(f"{name.upper()} 최종 w = {final_w:.4f}, f(5) = {forward(5, torch.tensor(final_w)).item():.3f}")
 
-    # loss
-    l = loss(Y, y_predicted)
+#%%
+# ------------------------------
+# 5) 시각화
+# ------------------------------
+plt.figure(figsize=(8,5))
+for name, (_, losses) in results.items():
+    plt.plot(losses, label=name)
 
-    # calculate gradients = backward pass
-    l.backward()
-
-    # update weights
-    optimizer.step()
-
-    # zero the gradients after updating
-    optimizer.zero_grad()
-
-    if epoch % 10 == 0:
-        print('epoch ', epoch+1, ': w = ', w, ' loss = ', l)
-
-print(f'Prediction after training: f(5) = {forward(5).item():.3f}')
-
+plt.title("Optimizer Comparison (SGD vs Momentum vs Adam)")
+plt.xlabel("Epoch")
+plt.ylabel("MSE Loss")
+plt.legend()
+plt.grid(True)
+plt.show()
 
 # %%
