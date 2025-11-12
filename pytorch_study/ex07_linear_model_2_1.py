@@ -9,10 +9,8 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
-torch.set_printoptions(precision=4)
-
+torch.set_printoptions(precision=4) # 소수점 4자리까지 출력 설정
 # here : f = 3 * x1 + 5 * x2 + 2
-
 # 0) Training samples, watch the shape!
 X = torch.tensor([
     [1, 1],  # x1=1, x2=1
@@ -107,7 +105,6 @@ plt.show()
 # %% 
 
 print(model(X_test))
-print( loss(Y_test[0],model(X_test[0])) ) # 0 로스값 계산 
-print( loss(Y_test[1],model(X_test[1])) ) # 1 로스값 계산 
+
 print( loss(Y_test,model(X_test)) ) # 전체 로스값 계산 
 # %%
