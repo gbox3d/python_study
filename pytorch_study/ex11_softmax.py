@@ -27,6 +27,8 @@ print('softmax numpy:', outputs)
 x = torch.tensor([2.0, 1.0, 0.1])
 outputs = torch.softmax(x, dim=0) # along values along first axis
 print('softmax torch:', outputs)
+total = torch.sum(outputs).item()
+print('sum of probabilities:', total) # 합을 1로 만들어주기
 
 #%%
 # Cross entropy

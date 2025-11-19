@@ -49,6 +49,11 @@ plt.ylabel(feature_names[1])
 plt.legend()
 plt.show()
 
+#%% print all feature names
+print("Feature names in the dataset:")
+for feature in feature_names:
+    print(feature)
+
 
 #%%
 

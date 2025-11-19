@@ -14,6 +14,10 @@ plt.plot(X_numpy, y_numpy, 'ro')
 plt.show()
 
 #%%
+print(X_numpy.shape)
+print(X_numpy)
+
+#%%
 # cast to float Tensor
 X = torch.from_numpy(X_numpy.astype(np.float32))
 y = torch.from_numpy(y_numpy.astype(np.float32))
@@ -28,6 +32,8 @@ input_size = n_features
 output_size = 1
 model = nn.Linear(input_size, output_size)
 
+print(model.weight)
+#%%
 # 2) Loss and optimizer
 learning_rate = 0.01
 
