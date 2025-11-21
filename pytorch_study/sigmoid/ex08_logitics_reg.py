@@ -10,16 +10,16 @@ import matplotlib.pyplot as plt
 
 #%%
 # 0) Prepare data
-bc = datasets.load_breast_cancer()
+bc = datasets.load_breast_cancer() 
 X, y = bc.data, bc.target
-
 n_samples, n_features = X.shape
-
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+
 #%%
 print(X_train.shape)
 print(y_train.shape)
 print(X_train[0])
+
 #%%
 # scale
 sc = StandardScaler()
@@ -106,9 +106,12 @@ plt.figure(figsize=(12, 6))
 
 # Plot actual classes
 plt.subplot(1, 2, 1)
-for class_value in np.unique(y_test_torch):
+
+colors = ['red', 'blue', 'green']
+for i, class_value in enumerate(np.unique(y_test_torch)):
     row_ix = np.where(y_test_torch == class_value)
-    plt.scatter(X_test_torch[row_ix, 0], X_test_torch[row_ix, 1], label=f'Actual Class {class_value}')
+    plt.scatter(X_test_torch[row_ix, 0], X_test_torch[row_ix, 1],
+                c=colors[i], label=f'Class {class_value}')
 
 plt.title('Actual Test Set Labels')
 plt.xlabel(bc.feature_names[0])
@@ -117,9 +120,12 @@ plt.legend()
 
 # Plot predicted classes
 plt.subplot(1, 2, 2)
-for class_value in np.unique(y_predicted_cls):
+colors = ['red', 'blue', 'green']
+for i, class_value in enumerate(np.unique(y_predicted_cls)):
     row_ix = np.where(y_predicted_cls == class_value)
-    plt.scatter(X_test_torch[row_ix, 0], X_test_torch[row_ix, 1], label=f'Predicted Class {class_value}')
+    plt.scatter(X_test_torch[row_ix, 0], X_test_torch[row_ix, 1], 
+                c=colors[i],
+                label=f'Predicted Class {class_value}')
 
 plt.title('Predicted Test Set Labels')
 plt.xlabel(bc.feature_names[0])
