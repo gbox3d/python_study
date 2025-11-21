@@ -43,10 +43,11 @@ Y_test = torch.tensor([[47]], dtype=torch.float32)
 input_size = X.shape[1]
 output_size = Y.shape[1]
 print(f'Input size: {input_size}, Output size: {output_size}')
-# we can call this model with samples X
-model = nn.Linear(input_size, output_size) #숫자 input_size 개를 입력 받아서 숫자 output_size 개를 출력하는 선형모델을 만든다.
 
-'''
+# we can call this model with samples X
+# model = nn.Linear(input_size, output_size) #숫자 input_size 개를 입력 받아서 숫자 output_size 개를 출력하는 선형모델을 만든다.
+
+
 class LinearRegression(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(LinearRegression, self).__init__()
@@ -54,8 +55,8 @@ class LinearRegression(nn.Module):
         self.lin = nn.Linear(input_dim, output_dim)
     def forward(self, x):
         return self.lin(x)
+
 model = LinearRegression(input_size, output_size)
-'''
 
 print(f'Prediction before training: f(5) = {model(X_test[0]).item():.3f}')
 
@@ -105,6 +106,6 @@ plt.show()
 # %% 
 
 print(model(X_test))
-
 print( loss(Y_test,model(X_test)) ) # 전체 로스값 계산 
+
 # %%
